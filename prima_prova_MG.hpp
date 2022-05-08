@@ -1,3 +1,6 @@
+#ifndef prima_prova_MG.hpp
+#define prima_prova_MG.hpp
+
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
 #include <SFML/Window.hpp>
@@ -6,41 +9,56 @@
 #include <iostream>
 #include <vector>
 
-struct popolazione {
-  int S{}, I{}, R{};
+class persone : public sf::Transformable, public sf::Drawable
+{
+public:
+//qui si mettono le funzioni per giocare con posizione e colori delle persone
+private:
+  virtual void draw(sf::RenderTarget& persona, sf::RenderStates stato);  const {
+    stato.transform *= getTransform();
+    stato.texture = &miatexture;//applico le texture
+    persona.draw(m_vertici, stato);
+  }
 };
+//persone persona;
+sf::VertexArray m_vertici;
+sf::Texture miatexture;
 
 class epidemia {
  private:
-  int beta{};
-  int gamma{};  // entrambi tra 0 e 1
+  double beta{};
+  double gamma{};  // entrambi tra 0 e 1
 
-  int popol_tot = prima.S + prima.I + prima.R;
+  //int popol_tot = prima.S + prima.I + prima.R;    
   // check ad ogni delta_t se popol_tot = S + I + M
 
  public:
- 
- bool check() { //check per i parametri beta e gamma, dobbiamo toglierlo dalla funzione
-  if (beta > 1 && beta < 0 && gamma > 1 &&
-      gamma < 0)  // check per i parametri gamma e beta
-  {
-    throw std::runtime_error{"non valid parameters"};
-  };}
+ epidemia(double b, double g): beta{b}, gamma{g} {
+   if (beta > 1 && beta < 0 && gamma > 1 &&
+        gamma < 0)  // check per i parametri gamma e beta
+    {
+      throw std::runtime_error{"non valid parameters"};
+    }}
+    bool const check() {} //check per i parametri beta e gamma, dobbiamo toglierlo dalla funzione
+
   // std::vector<persone> prima{};     //creo due vettori che mi salvino lo
   // stato della mia popolazione std::vector<persone> dopo;        //risultato
   // della funzione evolve
-  popolazione prima;  // creo la mia popolazione iniziale (come oggetto della struc)
-    double delta_t{};
-  popolazione evoluzione_mono(popolazione inizio, double t) : prima{inizio}, delta_t{t} {};  // costruttore
-    popolazione operator()(popolazione const& p1, double const& t) {
-    popolazione dopo{};
-    dopo.S = prima.S - (beta * prima.S * prima.I) / popol_tot;
-    dopo.I = prima.I + (beta * prima.S * prima.I) / popol_tot - (gamma * prima.I);
-    dopo.R = prima.R + gamma * prima.I;
-    prima = dopo;  // poi bisogna rendere uguali i due oggetti come "aggiornamento"
-    return prima;
+  //popolazione evoluzione_mono(popolazione inizio) : prima{inizio} {};  // costruttore, 
+  // popolazione operator()(popolazione const& p1) {
+     popolazione evoluzione_mono(popolazione p1) {
+    popolazione prima{};
+    
+    prima.S = p1.S;
+    prima.R = p1.R;
+    prima.I = p1.I;
+    int popol_tot = prima.S + prima.I + prima.R;
+    p1.S = prima.S - (beta * prima.S * prima.I) / popol_tot;
+    p1.I = prima.I + (beta * prima.S * prima.I) / popol_tot - (gamma * prima.I);
+    p1.R = prima.R + gamma * prima.I;
+    return p1;
   }
-
+/*
 std::vector<int> const& state() const { 
     std::vector<int> stato;
     stato[0] = prima.S;
@@ -53,8 +71,10 @@ std::vector<int> const& state() const {
         int intervalli = tempo_tot/intervallo;
         for (int i = 0; i < intervalli; i++)
         {
-            evoluzione_mono(inizio, intervallo);
+            evoluzione_mono(inizio);  //serve solo lo stato iniziale per fare quel singolo step
         }
         return prima;    }
-
+*/
 };
+
+#endif
