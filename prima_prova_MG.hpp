@@ -9,20 +9,27 @@
 #include <iostream>
 #include <vector>
 
-class persone : public sf::Transformable, public sf::Drawable
-{
-public:
-//qui si mettono le funzioni per giocare con posizione e colori delle persone
-private:
-  virtual void draw(sf::RenderTarget& persona, sf::RenderStates stato);  const {
-    stato.transform *= getTransform();
-    stato.texture = &miatexture;//applico le texture
-    persona.draw(m_vertici, stato);
-  }
+// class persone : public sf::Transformable, public sf::Drawable
+// {
+// public:
+// //qui si mettono le funzioni per giocare con posizione e colori delle persone
+// private:
+//   virtual void draw(sf::RenderTarget& persona, sf::RenderStates stato);  const {
+//     stato.transform *= getTransform();
+//     stato.texture = &miatexture;//applico le texture
+//     persona.draw(m_vertici, stato);
+//   }
+// };
+// //persone persona;
+// sf::VertexArray m_vertici;
+// sf::Texture miatexture;
+
+
+struct popolazione {
+  double S{};
+  double I{};    
+  double R{};    //suscettibili, infetti, rimossi
 };
-//persone persona;
-sf::VertexArray m_vertici;
-sf::Texture miatexture;
 
 class epidemia {
  private:
@@ -34,7 +41,7 @@ class epidemia {
 
  public:
  epidemia(double b, double g): beta{b}, gamma{g} {
-   if (beta > 1 && beta < 0 && gamma > 1 &&
+   if (beta > 1 || beta < 0 || gamma > 1 ||
         gamma < 0)  // check per i parametri gamma e beta
     {
       throw std::runtime_error{"non valid parameters"};

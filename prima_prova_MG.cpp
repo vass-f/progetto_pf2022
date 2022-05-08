@@ -20,45 +20,45 @@ int main() {
     throw std::runtime_error(
         "numero di infetti maggiore della popolazione totale.");
   }
-  epidemia covid(0.4, 0.3);
+  epidemia covid(0.75, 0.25);   //BETA GAMMA
   if (covid.check() == 0)  // secondo check
   {
     throw std::runtime_error("valori di apha e/o beta non consentiti.");
   }
 
-  int suscettibili = persone_tot - I_iniz;
+  double suscettibili = persone_tot - I_iniz;
   popolazione inizio{suscettibili, I_iniz,
                      0};  // creo la situazione iniziale di tipo "popolazione"
 
   for (int i = 0; tempo_tot > i; i++) {
-    std::cout << inizio.S << "   " << inizio.I << "   " << inizio.R << "   "
+    std::cout <<"SANI:  "<< inizio.S << "  INFETTI:  " << inizio.I << "  RIMOSSI:  " << inizio.R << "   "
               << inizio.S + inizio.I + inizio.R << std::endl;
     inizio = covid.evoluzione_mono(inizio);
   }
 
   //      ++PARTE GRAFICA++
-  sf::RenderWindow window(sf::VideoMode(500, 700), "simulazione pandemica");
-  window.setFramerateLimit(60);
-  while (window.isOpen()) {
-    sf::Event event;
-    while (window.pollEvent(event)) {
-      switch (event.type) {
-        case sf::Event::KeyPressed:
-          /* code */  // cicli if per capire quale tasto è stato premuto
-          break;
+  // sf::RenderWindow window(sf::VideoMode(500, 700), "simulazione pandemica");
+  // window.setFramerateLimit(60);
+  // while (window.isOpen()) {
+  //   sf::Event event;
+  //   while (window.pollEvent(event)) {
+  //     switch (event.type) {
+  //       case sf::Event::KeyPressed:
+  //         /* code */  // cicli if per capire quale tasto è stato premuto
+  //         break;
 
-        case sf::Event::Closed:
-          window.close();
-          break;
-        case sf::Event::Resized:
-          std::cout << "nuova altezza " << event.size.height
-                    << "     nuova larghezza " << event.size.width << std::endl;
-          break;  // quando la finestra cambia di dimensioni scrive le
-                  // dimensioni aggiornate
-        default:
-          break;
-      }
-    }
+  //       case sf::Event::Closed:
+  //         window.close();
+  //         break;
+  //       case sf::Event::Resized:
+  //         std::cout << "nuova altezza " << event.size.height
+  //                   << "     nuova larghezza " << event.size.width << std::endl;
+  //         break;  // quando la finestra cambia di dimensioni scrive le
+  //                 // dimensioni aggiornate
+  //       default:
+  //         break;
+  //     }
+  //   }
     
     //sf::Vertex persona(sf::Vector2f(10.f, 50.f), sf::Vector2f(100.f, 100.f));
     //usare i vertex non conviene visto che sono sempre e solo un pixel, scrivo la mia classe "persone"
@@ -81,13 +81,8 @@ int main() {
     //     break;
     // }
     
-
-
-
-
-
-    window.clear(sf::Color::Black);
+    //window.clear(sf::Color::Black);
     //window.draw();
-    window.display();
-  }
+    //window.display();
+ // }
 }
