@@ -1,4 +1,4 @@
-#include "prima_prova_MG.hpp"
+#include "epidemia_MG.hpp"
 
 #include <SFML/Graphics.hpp>
 #include <SFML/System.hpp>
