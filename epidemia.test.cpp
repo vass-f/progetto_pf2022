@@ -10,7 +10,7 @@ TEST_CASE("Testing epidemia"){
     x.evolve();
     CHECK(x.N() == tot);
     CHECK(x.approssima() == (popolazione){83, 14, 3});
-    x.stampa_p();
+    //x.stampa_p();
 
     SUBCASE("0 infetti") {
         popolazione p2{100, 0, 0};
@@ -33,5 +33,32 @@ TEST_CASE("Testing epidemia"){
         CHECK_THROWS(epidemia{1, 1, p1});
         CHECK_THROWS(epidemia{0.5, -1.5, p1});
         CHECK_THROWS(epidemia{-1, 0.4, p1});
+    }
+
+    SUBCASE("test conservation of N"){  //Mi da dei problemi
+        /*popolazione p2{10000, 10, 0};
+        epidemia x3{0.6 , 0.3, p2};*/
+        popolazione p{90, 10, 0};
+        epidemia x3{0.60, 0.40, p};
+        int tot = x3.N();
+        CHECK(tot == 100);
+        
+        x3.evolve();
+        CHECK(x3.N() == tot);
+        x3.evolve();
+        CHECK(x3.N() == tot);
+        x3.evolve();
+        CHECK(x3.N() == tot);
+        x3.evolve();
+        CHECK(x3.N() == tot);
+        x3.evolve();
+        CHECK(x3.N() == tot);
+        x3.evolve();
+        CHECK(x3.N() == tot);
+        x3.evolve();
+        CHECK(x3.N() == tot);
+
+        x3.evolve_t(10);
+        CHECK(x3.N() == tot);
     }
 }

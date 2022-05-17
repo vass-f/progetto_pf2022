@@ -7,10 +7,11 @@ void epidemia::evolve(){      //Per chiamarlo: covid.evolve();
     prima.S = p_.S;          //Mi salvo i valori iniziali di p1 in prima
     prima.I = p_.I;
     prima.R = p_.R;
-    int N = prima.S + prima.I + prima.R; //In futuro creare una funzione membro di epidemia che ritorni N
-    p_.S = prima.S - (beta * prima.S * prima.I) / N;        //Calcolo le variazioni a partire da quelli iniziali
-    p_.I = prima.I + (beta * prima.S * prima.I) / N - (gamma * prima.I);
+    double tot = prima.S + prima.I + prima.R; //In futuro creare una funzione membro di epidemia che ritorni N
+    p_.S = prima.S - (beta * prima.S * prima.I) / tot;        //Calcolo le variazioni a partire da quelli iniziali
+    p_.I = prima.I + (beta * prima.S * prima.I) / tot - (gamma * prima.I);
     p_.R = prima.R + gamma * prima.I;
+    //assert((double)N() == tot); 
 }
 
 void epidemia::evolve_t(int t){         //chiama evolve t volte banalmente
@@ -27,7 +28,7 @@ popolazione epidemia::p(){
 }
 
 int epidemia::N(){
-    return p_.S + p_.I + p_.R;
+    return N_;
 }
 
 popolazione epidemia::approssima(){    //funzione superflua, alla fine possiamo pure levarla completamente e mettere round 

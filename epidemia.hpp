@@ -18,12 +18,13 @@ class epidemia{
         double beta{};
         double gamma{};
         popolazione p_{};
-
+        int N_{};
     public:
         epidemia(double b, double g, popolazione p): beta{b}, gamma{g}, p_{p}{     //Costruttore
             if(beta >= 1 || beta <= 0 || gamma >= 1 || gamma <= 0){  //se beta e gamma non sono nell'intervallo stampa l'errore
                 throw std::runtime_error{"non valid parameters"};
             }
+            N_ = p_.S + p_.I + p_.R;
         }
 
         /*epidemia(double b, double g, double a, popolazione p) : beta{b}, gamma{g}, alfa{a}, p_{p}{
