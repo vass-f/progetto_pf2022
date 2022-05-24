@@ -35,30 +35,54 @@ TEST_CASE("Testing epidemia"){
         CHECK_THROWS(epidemia{-1, 0.4, p1});
     }
 
-    SUBCASE("test conservation of N"){  //Mi da dei problemi
+    SUBCASE("test conservation of N"){
         /*popolazione p2{10000, 10, 0};
         epidemia x3{0.6 , 0.3, p2};*/
         popolazione p{90, 10, 0};
-        epidemia x3{0.60, 0.40, p};
-        int tot = x3.N();
-        CHECK(tot == 100);
+        epidemia x3{0.60, 0.40, p};    
+        CHECK(x3.N() == 100);
         
         x3.evolve();
-        CHECK(x3.N() == tot);
+        CHECK(x3.N() == x3.tot());
         x3.evolve();
-        CHECK(x3.N() == tot);
+        CHECK(x3.N() == (int)x3.tot());
+
         x3.evolve();
-        CHECK(x3.N() == tot);
+        CHECK(x3.N() == x3.tot());
         x3.evolve();
-        CHECK(x3.N() == tot);
+        CHECK(x3.N() == x3.tot());
         x3.evolve();
-        CHECK(x3.N() == tot);
+        CHECK(x3.N() == x3.tot());
         x3.evolve();
-        CHECK(x3.N() == tot);
+        CHECK(x3.N() == x3.tot());
         x3.evolve();
-        CHECK(x3.N() == tot);
+        CHECK(x3.N() == x3.tot());
 
         x3.evolve_t(10);
-        CHECK(x3.N() == tot);
+        CHECK(x3.N() == x3.tot());
+    }
+
+    SUBCASE("test long period of time"){
+        popolazione p1{99997, 47, 0};
+        epidemia x4{0.61, 0.4, p1};
+        int tot = x4.N();
+        CHECK(tot == 100044);
+        CHECK(x4.N() == 100044);
+
+        x4.evolve();
+        CHECK(x4.N() == x4.tot());
+        x4.evolve_t(1000);
+        CHECK(x4.N() == x4.tot());
+        x4.evolve_t(10000);
+        CHECK(x4.N() == x4.tot());
+        std::cout<<x4.state().S<<" "<<x4.state().I<<" "<<x4.state().R<<'\n';
+        x4.stampa_p();
+        std::cout<<'\n';
+
+        x4.evolve_t(10000);
+        CHECK(x4.N() == x4.tot());
+        std::cout<<x4.state().S<<" "<<x4.state().I<<" "<<x4.state().R<<'\n';
+        x4.stampa_p();
+        std::cout<<'\n';
     }
 }

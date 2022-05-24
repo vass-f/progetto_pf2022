@@ -31,12 +31,14 @@ class epidemia{
                 //Per implementare altri modelli nella stessa classe, usare costruttori diversi, magari overload di funzioni
         } */
 
-        void evolve(); //covid.evolve();
+        void evolve();         //covid.evolve();
         void evolve_t(int t);  //chiama evolve t volte
-        void stampa_p(); //stampa la popolazione
-        popolazione p();        //ritorna la popolazione (l'ho fatta visto che è privata, per ora serve solo per i test)
-        int N();               //ritorna la popolazione totale, che deve essere costante
+        void stampa_p();         //stampa la popolazione
+        popolazione state();        //ritorna la popolazione (l'ho fatta visto che è privata, per ora serve solo per i test)
+        int N();                    //ritorna la popolazione totale, che deve essere costante
         popolazione approssima();  //approssima la popolazione a interi ma la salva in un'altra variabile di tipo popolazione
+        double tot();                 //Ritorna la somma degli elementi della variabile popolazione, creata per fare il check sulla
+                                      //conservazione di N
 };
 
 void evolve(epidemia x);
