@@ -19,6 +19,7 @@ class epidemia{
         double gamma{};
         popolazione p_{};
         int N_{};
+        bool modello_{}; //Se vogliamo implementare
     public:
         epidemia(double b, double g, popolazione p): beta{b}, gamma{g}, p_{p}{     //Costruttore
             if(beta >= 1 || beta <= 0 || gamma >= 1 || gamma <= 0){  //se beta e gamma non sono nell'intervallo stampa l'errore

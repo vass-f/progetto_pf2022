@@ -20,7 +20,7 @@ void epidemia::evolve_t(int t){         //chiama evolve t volte banalmente
 
 void epidemia::stampa_p(){
     popolazione p = approssima();               //Salva la popolazione approssimata in una variabile aleatoria che serve 
-    std::cout<<p.S<<" "<<p.I<<" "<<p.R/*<<'\n'*/;   //solo qua per stamparla
+    std::cout<<p.S<<" "<<p.I<<" "<<p.R<<'\n';   //solo qua per stamparla
 }
 
 popolazione epidemia::state(){

@@ -64,114 +64,36 @@ class Finestra{
             window_.create(sf::VideoMode(display_width_, display_height_), "Epidemia");
         };
         
-        Finestra(std::string a, std::string b) : label_x_{a}, label_y_{b} {
+        Finestra(std::string label_x, std::string label_y, unsigned width = sf::VideoMode::getDesktopMode().width / 2, unsigned height = sf::VideoMode::getDesktopMode().height / 2) 
+            : label_x_{label_x}, label_y_{label_y}, display_width_{width}, display_height_{height} {
             if(!font.loadFromFile("arial.ttf")){
                 throw std::runtime_error("Il font non è stato caricato");
             }
             window_.create(sf::VideoMode(display_width_, display_height_), "Epidemia");
         }
 
-        bool isOpen(){ return window_.isOpen(); }
-        void add(double x){
-            data_.add(x);
-        }
+        
 
-        void add(std::vector<double> vettore){
-            data_.add(vettore);
-        }
+        bool isOpen();  //Uguale a window.isOpen() per far andare il ciclo while
+        void add(double x); //aggiungo elementi al mio isto
 
-        sf::Text crea_text(std::string string, sf::Vector2f position, int grandezza = 10){
-            sf::Text text;
-            text.setFont(font);
-            text.setString(string);
-            text.setCharacterSize(grandezza); //Da capire se è possibile modificarlo in funzione della dimensione della finestra o non importa
-            text.setPosition(position.x, position.y);
-            return text;
-        }
+        void add(std::vector<double> vettore);
 
-        sf::VertexArray crea_rettangolo(double val, int i){ //L'altezza di un rettangolo non deve essere calcolata con val * h 
-                                                            //Perché i pixel sulle y vanno dall'alto verso l'alto, più è piccolo più è verso l'alto
-            sf::VertexArray r(sf::Quads, 4);
-            r[0].position = sf::Vector2f(origine.x + i * delta_x, origine.y);
-            r[1].position = sf::Vector2f(origine.x + i * delta_x, h + (1-val)*(origine.y - h));
-            r[2].position = sf::Vector2f(origine.x + (i + 1) * delta_x, h + (1-val)*(origine.y - h));
-            r[3].position = sf::Vector2f(origine.x + (i + 1) * delta_x, origine.y);
+        sf::Text crea_text(std::string string, sf::Vector2f position); //Crea un testo generico in una posizione generica
 
-            return r;
-        }
+        sf::VertexArray crea_rettangolo(double val, int i); //Crea un rettangolo alla posizione di i, l'altezza è calcolata in base al suo valore
+                                                            //e al massimo dei dati
 
-        void draw_rectangle(){
-            std::vector<double> data = data_.get();
-            auto it = data.begin();
-            auto end = data.end();
-            int i = 0;
-            double max = data_.max();
-            while((estremo_x.x - origine.x) / delta_x < data.size()) { delta_x -= 0.1; };
-            for(; it != end; ++it){
-                auto altezza = (*it) / max;
-                auto r = crea_rettangolo(altezza, i);
-                window_.draw(r);
-                ++i;
-            }
-        }
+        void draw_rectangle(); //Ciclo for che disegna tutti i rettangoli a partire dai dati in data_, chiama crea_rettangolo
 
-        sf::VertexArray crea_barra_asse_y(double altezza){
-            sf::VertexArray b(sf::LineStrip, 2);
-            b[0].position = sf::Vector2f(origine.x + (0.06)*origine.x, altezza);
-            b[1].position = sf::Vector2f(origine.x - (0.06)*origine.x, altezza);
+        sf::VertexArray crea_barra_asse_y(double altezza); //Crea una barra orizzontale sull'asse y a partire dall'altezza
 
-            return b;
-        }
+        sf::VertexArray crea_barra_asse_x(double distanza); //Crea una barra verticale sull'asse x a partire dalla distanza
 
-        sf::VertexArray crea_barra_asse_x(double distanza){
-            sf::VertexArray b(sf::LineStrip, 2);
-            b[0].position = sf::Vector2f(distanza, origine.y + (0.01)*origine.y);
-            b[1].position = sf::Vector2f(distanza, origine.y - (0.01)*origine.y);
-            
-            return b;
-        }
+        void draw_barre(); //Disegna le barre chiamando le due funzioni sopra, l'altezza dipende dal numero di intervalli, la distanza
+                           //dipende da delta_x e i
 
-        void draw_barre(){
-            double max = data_.max();
-            for(int i = 1; i != n_int_y + 1; ++i){
-                double val = (double)(i) / (double)(n_int_y);
-                auto posizione = h + (1 - val)*(origine.y - h);
-                auto barra = crea_barra_asse_y(posizione);
-                window_.draw(barra);
-                window_.draw(crea_text(std::to_string(max * val), sf::Vector2f(barra[0].position.x - (0.5)* barra[0].position.x, barra[0].position.y - (0.06)*barra[0].position.y)));
-                
-            }
-
-            for(int i = 1; i != (int)data_.get().size() + 1; ++i){
-                auto barra = crea_barra_asse_x(origine.x + i*delta_x);
-                window_.draw(barra);
-                if(i % 5 == 0) window_.draw(crea_text(std::to_string(i), sf::Vector2f(barra[0].position.x - (0.01)*barra[0].position.x, barra[0].position.y + (0.02)*barra[0].position.y)));
-            }
-            std::cout<<'\n';
-        }
-
-        void draw(){
-            sf::Event event;
-            while (window_.pollEvent(event))
-            {
-                if (event.type == sf::Event::Closed)
-                    window_.close();
-            }
-
-            window_.clear();
-
-            window_.draw(crea_text("o", sf::Vector2f(origine.x - (0.1)*origine.x, origine.y + (0.01)*origine.y), 15));
-            window_.draw(asse_x);
-            window_.draw(asse_y);
-            window_.draw(punta_x);
-            window_.draw(punta_y);
-            draw_rectangle();
-            window_.draw(label_x);
-            window_.draw(label_y);
-            draw_barre();
-
-            window_.display();
-        }
+        void draw(); //Disegna tutto, chiama le funzioni per disegnare le barre e i rettangoli
 };
 
 
