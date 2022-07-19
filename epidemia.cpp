@@ -1,4 +1,5 @@
 #include "epidemia.hpp"
+#include <cmath>
 
 void epidemia::evolve(){      //Per chiamarlo: covid.evolve();
     popolazione prima{};     //creo una variabile aleatoria in cui salvarmi i valori iniziali (i valori i-1 per intenderci)
@@ -6,10 +7,11 @@ void epidemia::evolve(){      //Per chiamarlo: covid.evolve();
     prima.S = p_.S;          //Mi salvo i valori iniziali di p1 in prima
     prima.I = p_.I;
     prima.R = p_.R;
-    int N = prima.S + prima.I + prima.R; //In futuro creare una funzione membro di epidemia che ritorni N
-    p_.S = prima.S - (beta * prima.S * prima.I) / N;        //Calcolo le variazioni a partire da quelli iniziali
-    p_.I = prima.I + (beta * prima.S * prima.I) / N - (gamma * prima.I);
+    
+    p_.S = prima.S - (beta * prima.S * prima.I) / N();        //Calcolo le variazioni a partire da quelli iniziali
+    p_.I = prima.I + (beta * prima.S * prima.I) / N() - (gamma * prima.I);
     p_.R = prima.R + gamma * prima.I;
+    assert(round(p_.S + p_.I + p_.R) == N());     //round per evitare che (per esempio) 99.99999999 approssimi a 99
 }
 
 void epidemia::evolve_t(int t){         //chiama evolve t volte banalmente
@@ -21,24 +23,29 @@ void epidemia::stampa_p(){
     std::cout<<p.S<<" "<<p.I<<" "<<p.R<<'\n';   //solo qua per stamparla
 }
 
-/*popolazione epidemia::p(){
+popolazione epidemia::state(){
     return {p_.S, p_.I, p_.R};
-}*/
-
-int epidemia::N(){
-    return p_.S + p_.I + p_.R;
 }
 
-popolazione epidemia::approssima(){
-    int tot = N();
-    popolazione p_intero{};
-    p_intero.I = (int)p_.I;
-    p_intero.R = (int)p_.R;
-    p_intero.S = tot - p_intero.I - p_intero.R;
+int epidemia::N(){
+    return N_;
+}
 
+popolazione epidemia::approssima(){    //funzione superflua, alla fine possiamo pure levarla completamente e mettere round 
+                                       //direttamente sul cout in "stampa_p", se tutto funziona ovviamente
+    popolazione p_intero{};
+    p_intero.I = round(p_.I);
+    p_intero.R = round(p_.R);
+    p_intero.S = N() - p_intero.I - p_intero.R;
+
+    assert(p_intero.S + p_intero.I + p_intero.R == N()); //controllo N
     return p_intero;
 }
 
-void evolve(epidemia x){    //Per chiamarlo: evolve(covid);
-    x.evolve();
+void evolve(epidemia x){    //Per chiamarlo: evolve(covid); 
+    x.evolve();             //Non funziona! non so il perché
+}  
+
+double epidemia::tot(){
+    return round(p_.S + p_.I + p_.R);
 }
