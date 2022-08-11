@@ -1,10 +1,10 @@
 #include "palline.hpp"
 
-void Person::position(double a, double b){  // cambia posizione
+void Person::position(double a, double b){ 
     position_.x = a;
     position_.y = b;
 }
-void Person::velocity(double a, double b){  // cambia velocita
+void Person::velocity(double a, double b){ 
     velocity_.x = a;
     velocity_.y = b;
 }
@@ -17,7 +17,7 @@ Point Person::velocity(){
 int Person::infection(){ 
     return infection_;
 }
-void Person::infection(int a){ // cambia stato della malattia
+void Person::infection(int a){ 
     infection_ = a;
 }
 sf::CircleShape Person::circle(){
@@ -32,15 +32,15 @@ void Person::setPosition(double a, double b){
 void Person::setFillColor(sf::Color a){
     circle_.setFillColor(a);
 }
-void Person::evolve_p(){ // fai muovere la pallina
+void Person::evolve_p(){
     position(position().x + velocity().x, position().y + velocity().y);
 }
-void Person::evolve_v(){   // cambia un po' la velocita ai vivi, i dead restano fermi
+void Person::evolve_v(){   
   auto a = rand() % 5;
-  if(a == 1 && infection() != 3 && copysign(1, velocity().x) == 1){
-    velocity(velocity().x - (((rand() % 10) - 4) / 8.), velocity().y);
+  if(a == 1 && infection() != 3 && copysign(1, velocity().x) == 1){  // dead's velocity do not change, they are static
+    velocity(velocity().x - (((rand() % 10) - 4) / 8.), velocity().y); // 
   }
-  if(a == 2 && infection() != 3 && copysign(1, velocity().x) == -1){
+  if(a == 2 && infection() != 3 && copysign(1, velocity().x) == -1){ 
     velocity(velocity().x + (((rand() % 10) - 4) / 8.), velocity().y);
   }
   if(a == 3 && infection() != 3 && copysign(1, velocity().y) == 1){
@@ -60,15 +60,10 @@ double Person::distance (Person& other_radius) { // calcola la distanza tra due 
 int main(){
     int infection_distance{60};  // distanza contagio
     int radius{10}; // grandezza palline
-    int first_infected{20}; // n_infected iniziali
-    int n_tot{200}; // n_people totali
+    int first_infected{}; // n_infected iniziali
+    int n_tot{}; // n_people_alive totali
     int pace{30}; // velocita palline
     int const fps{60}; // frame per second
-    int n_people{n_tot};
-    int n_infectable{n_tot-first_infected};
-    int n_infected{first_infected};
-    int n_recovered{};
-    int n_dead{};
     int n_text{6};  // numero di frasi/dati che possono apparire sullo schermo
     std::vector<sf::Text> text(n_text);
     sf::Font data_font;
@@ -99,16 +94,17 @@ int main(){
     sf::Clock clock;
     srand(time(0));  // volendo di seguito ho messo come commento il codice per far settare tutto all'utente 
                      // se non si mette questa opzione tutti i dati dovrebbero essere const per sicurezza
-    /* std::cout<< "Set the radius of the circles (10)" << '\n';
-    std::cin >> radius;
-    std::cout<< "Set the distance where the peole can infectate (60)" << '\n';
-    std::cin >> r;
-    std::cout<< "Set the initial number of people (200)" << '\n';
+    
+    std::cout<< "Set the initial number of people" << '\n';
     std::cin >> n_tot;
-    std::cout<< "Set the initial number of infected people (20)" << '\n';
-    std::cin >> first_n_infected;
-    std::cout<< "Set the medium pace of people (30)" << '\n';
-    std::cin >> pace; */
+    std::cout<< "Set the initial number of infected people" << '\n';
+    std::cin >> first_infected; 
+        
+    int n_people_alive{n_tot};
+    int n_infectable{n_tot-first_infected};
+    int n_infected{first_infected};
+    int n_recovered{};
+    int n_dead{};
     
     unsigned const display_width = sf::VideoMode::getDesktopMode().width;  // questa è la roba di sfml 
     unsigned const display_height = sf::VideoMode::getDesktopMode().height;
@@ -167,7 +163,7 @@ int main(){
                   (*it).velocity(0.,0.);
                   --n_infected;
                   ++n_dead;
-                  --n_people;
+                  --n_people_alive;
                 }   
                 if(n ==  27 || n == 28 || n == 29){ // a volte guariscono
                   (*it).infection(2);
@@ -208,7 +204,7 @@ int main(){
            p.velocity(((rand() % (pace + 1)) - pace/2) / 20., ((rand() % (pace + 1)) - pace/2) / 20.);
            p.setRadius(radius);
            ++n_infectable; 
-           ++n_people;
+           ++n_people_alive;
            people.reserve(people.size()+10);  // metto dello spazio in piu per sicurezza che senno si bugga
            people.push_back(p);
         }
@@ -220,16 +216,12 @@ int main(){
            p.setRadius(radius);
            p.infection(1);
            ++n_infected; 
-           ++n_people;
+           ++n_people_alive;
            people.reserve(people.size()+10);
            people.push_back(p);
         }  
 
-
-        if(people.capacity() <= people.size()){
-            throw std::runtime_error{"maximum size reached"};
-        }
-        assert(n_infectable+n_infected+n_recovered == n_people);
+        assert(n_infectable+n_infected+n_recovered == n_people_alive);
 
         auto infectable = "Infectable:  " + std::to_string(n_infectable);
         auto infected = "Infected:  " + std::to_string(n_infected);
@@ -262,7 +254,7 @@ int main(){
         if(n_dead > 1000){
             text[4].setString(info_5);
             window.draw(text[4]);}
-        if(n_infected > (n_infectable+n_infected+n_recovered)/2){
+        if(n_infected > n_people_alive/2){
             text[5].setString(info_6);
             window.draw(text[5]);} 
         for(auto it = people.begin(); it != people.end(); ++it) window.draw((*it).circle()); // disegna tutte le palline
@@ -290,7 +282,7 @@ int main(){
         window.draw(the_end);
         window.display();
         }
-    if(n_people == 0){
+    if(n_people_alive == 0){
         people.erase(people.begin(), people.end());
         text.erase(text.begin(), text.end());
         sf::Text the_end;
