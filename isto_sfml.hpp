@@ -80,6 +80,8 @@ class Finestra{
         void add(std::vector<double> vettore);
 
         sf::Text crea_text(std::string string, sf::Vector2f position); //Crea un testo generico in una posizione generica
+                                                                       //Capire perché se la dimensione del carattere gliela passo come
+                                                                       //parametro fissato da problemi (int grandezza = 10)
 
         sf::VertexArray crea_rettangolo(double val, int i); //Crea un rettangolo alla posizione di i, l'altezza è calcolata in base al suo valore
                                                             //e al massimo dei dati

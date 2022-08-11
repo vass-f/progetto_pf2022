@@ -10,7 +10,8 @@ void Finestra::add(std::vector<double> vettore){
     data_.add(vettore);
 }
 
-sf::Text Finestra::crea_text(std::string string, sf::Vector2f position){
+sf::Text Finestra::crea_text(std::string string, sf::Vector2f position){ //Capire perché se la dimensione del carattere gliela passo come
+                                                                         //parametro fissato da problemi (int grandezza = 10)
     sf::Text text;
     text.setFont(font);
     text.setString(string);
