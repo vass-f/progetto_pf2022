@@ -38,19 +38,16 @@ void Person::evolve_p(){
 void Person::evolve_v(){   
   auto a = rand() % 5;
   if(a == 1 && infection() != 3 && copysign(1, velocity().x) == 1){  // dead's velocity do not change, they are static
-    velocity(velocity().x - (((rand() % 10) - 4) / 8.), velocity().y); // 
-  }
-  if(a == 2 && infection() != 3 && copysign(1, velocity().x) == -1){ 
-    velocity(velocity().x + (((rand() % 10) - 4) / 8.), velocity().y);
-  }
+    velocity(velocity().x - (((rand() % 10) - 4) / 8.), velocity().y);} // copysign is used beacause people should more probably decrease their velocity
+  if(a == 2 && infection() != 3 && copysign(1, velocity().x) == -1){  // to get a more realistic motion effect
+    velocity(velocity().x + (((rand() % 10) - 4) / 8.), velocity().y);}
   if(a == 3 && infection() != 3 && copysign(1, velocity().y) == 1){
-    velocity(velocity().x, velocity().y - (((rand() % 10) - 4) / 8.));
-  }
+    velocity(velocity().x, velocity().y - (((rand() % 10) - 4) / 8.));}
   if(a == 4 && infection() != 3 && copysign(1, velocity().y) == -1){
-    velocity(velocity().x, velocity().y + (((rand() % 10) - 4) / 8.));
-  }   
-}
-double Person::distance (Person& other_radius) { // calcola la distanza tra due palline
+    velocity(velocity().x, velocity().y + (((rand() % 10) - 4) / 8.));}
+} 
+
+double Person::distance (Person& other_radius) { // calculates the distance between two people
   double d_x = position().x - other_radius.position().x;
   double d_y = position().y - other_radius.position().y;
   double d = sqrt(d_x * d_x + d_y * d_y);
@@ -58,13 +55,13 @@ double Person::distance (Person& other_radius) { // calcola la distanza tra due 
 }
 
 int main(){
-    int infection_distance{60};  // distanza contagio
-    int radius{10}; // grandezza palline
-    int first_infected{}; // n_infected iniziali
-    int n_tot{}; // n_people_alive totali
-    int pace{30}; // velocita palline
+    int infection_distance{60};  
+    int radius{10}; // circle's radius
+    int first_infected{}; 
+    int n_tot{}; // total number of people
+    int const pace{30}; 
     int const fps{60}; // frame per second
-    int n_text{6};  // numero di frasi/dati che possono apparire sullo schermo
+    int const n_text{6};  // number of texts in the legend
     std::vector<sf::Text> text(n_text);
     sf::Font data_font;
     sf::Font comment_font;
@@ -92,8 +89,7 @@ int main(){
     }
 
     sf::Clock clock;
-    srand(time(0));  // volendo di seguito ho messo come commento il codice per far settare tutto all'utente 
-                     // se non si mette questa opzione tutti i dati dovrebbero essere const per sicurezza
+    srand(time(0));  
     
     std::cout<< "Set the initial number of people" << '\n';
     std::cin >> n_tot;
@@ -106,21 +102,21 @@ int main(){
     int n_recovered{};
     int n_dead{};
     
-    unsigned const display_width = sf::VideoMode::getDesktopMode().width;  // questa è la roba di sfml 
+    unsigned const display_width = sf::VideoMode::getDesktopMode().width;   
     unsigned const display_height = sf::VideoMode::getDesktopMode().height;
 
     sf::RenderWindow window(sf::VideoMode(display_width, display_height), "Covid epidemic");
     window.setFramerateLimit(fps);
 
-    std::vector<Person> people;    // vettore di people
-    for(int i{0}; i != n_tot; ++i){      // metti dentro n_tot people
+    std::vector<Person> people;    // people vector
+    for(int i{0}; i != n_tot; ++i){   // insert n_tot people
         Person p{};
         p.position((rand() % (display_width - 20)), (rand() % (display_height - 70)));
         p.velocity(((rand() % (pace + 1)) - pace/2) / 20., ((rand() % (pace + 1)) - pace/2) / 20.);
         p.setRadius(radius);
         people.push_back(p);
     }
-    for(int i{0}; i != first_infected; ++i) {   // metti dentro first_infected
+    for(int i{0}; i != first_infected; ++i) {   // insert infected people
         people[i].infection(1);
     }
 
@@ -134,55 +130,52 @@ int main(){
         }
 
     if(n_infected != 0){for(auto it = people.begin(); it != people.end(); ++it){
-            auto n{rand() % 2000};                                    // genero il numero casuale da cui dipende tutto
-            if((*it).position().x < 0.1 && copysign(1, (*it).velocity().x) == -1)   // fai rimbalzare le palline ai bordi
-                (*it).velocity((*it).velocity().x * (-1), (*it).velocity().y);      // il copysign serve a capire la direzione delle palline, cioè il segno della
-            if((*it).position().y < 0.1 && copysign(1, (*it).velocity().y) == -1)   // velocità, positiva se verso basso o destra e negativa se verso alto o 
-                (*it).velocity((*it).velocity().x, (*it).velocity().y * (-1));      // sinistra, così che le palline rimbalzano solo se stanno andando contro il
-                // muro, che a volte si buggava e la pallina si incastrava continuando a rimbalzare addosso alla parete perché, essendo oltre il 
-                // limite dello schermo, ad ogni frame cambiava direzine e non riusciva ad uscire
-            if((*it).position().x > (display_width - 20) && copysign(1, (*it).velocity().x) == 1) // fai rimbalzare le palline ai bordi
-                (*it).velocity((*it).velocity().x * (-1), (*it).velocity().y); 
-            if((*it).position().y > (display_height - 70) && copysign(1, (*it).velocity().y) == 1)
-                (*it).velocity((*it).velocity().x, (*it).velocity().y * (-1));
-            (*it).evolve_p();                    // fai muovere la pallina
-            (*it).evolve_v();                    // varia un po' la velocita della pallina
-            if ((*it).infection() == 1){         // guarda la distanza con le altre palline solo se la persona è infetta
-              for(long unsigned int i{0}; i != people.size() - 1; i++){
-                if ((*it).distance(people[i]) <=  infection_distance && people[i].infection() == 0) { // se un suscettibile è vicino a   
-                    if(n < 25){                                                                      // n_infected PROBABILMENTE si infetta
+            auto n{rand() % 2000};              // random number that will be used for infection, recovering and death rate
+            if((*it).infection() != 3){if((*it).position().x < 0.1 && copysign(1, (*it).velocity().x) == -1)   // people "bounce" at the end of the screen 
+                                      {(*it).velocity((*it).velocity().x * (-1), (*it).velocity().y);}     // copysign function is used because only the people that are going directed against
+                                      if((*it).position().y < 0.1 && copysign(1, (*it).velocity().y) == -1)  //the wall should "bounce", if not sometimes could happen that
+                                      {(*it).velocity((*it).velocity().x, (*it).velocity().y * (-1));}     // some people get trapped at the end of the screen
+                                      if((*it).position().x > (display_width - 20) && copysign(1, (*it).velocity().x) == 1)
+                                      {(*it).velocity((*it).velocity().x * (-1), (*it).velocity().y);}   
+                                      if((*it).position().y > (display_height - 70) && copysign(1, (*it).velocity().y) == 1) 
+                                      {(*it).velocity((*it).velocity().x, (*it).velocity().y * (-1));}}  
+            (*it).evolve_p();                    
+            (*it).evolve_v();                    
+            (*it).setPosition((*it).position().x, (*it).position().y);
+            if ((*it).infection() == 1){         // if this person is infected, he can infectate close people with some probability
+              for(long unsigned int i{0}; i != people.size(); i++){  
+                if ((*it).distance(people[i]) <=  infection_distance && people[i].infection() == 0) {    
+                    if(n < 25){                                                                    
                        if(people[i].infection() != 1){
                         ++n_infected;
                         --n_infectable;
                         people[i].infection(1);
                        }}}}}
 
-            if((*it).infection() == 1){ // a volte gli infected 
+            if((*it).infection() == 1){ // infected people 
                 if(n == 25 || n == 26){
-                  (*it).infection(3); // muoiono e si fermano
+                  (*it).infection(3); // can die
                   (*it).velocity(0.,0.);
                   --n_infected;
                   ++n_dead;
                   --n_people_alive;
                 }   
-                if(n ==  27 || n == 28 || n == 29){ // a volte guariscono
+                if(n ==  27 || n == 28 || n == 29){ // or recover
                   (*it).infection(2);
                   --n_infected;
                   ++n_recovered;
                 }
             }
-            if((*it).infection() == 2){ // a volte i recovered tornano sucettibili
-                auto n{rand() % 800};
-                if(n < 5){
+            if((*it).infection() == 2){ // recovered can become infectable again
+                if(n < 35 && n > 29){
                     (*it).infection(0);
                     ++n_infectable;
                     --n_recovered;
                 }
             }
 
-            (*it).setPosition((*it).position().x, (*it).position().y); // setta la posizione
             if ((*it).infection() == 0){
-             (*it).setFillColor(sf::Color::Blue);} // colora tutte le palline
+             (*it).setFillColor(sf::Color::Blue);} 
             if ((*it).infection() == 1){
              (*it).setFillColor(sf::Color::Red);}
             if ((*it).infection() == 2){
@@ -190,14 +183,14 @@ int main(){
             if ((*it).infection() == 3) {
              (*it).setFillColor(sf::Color::Black);}
 
-             if((*it).infection() == 3){ // i n_dead dopo un po' scompaiono
-                if(n < 40){
+             if((*it).infection() == 3){ // dead people can disappear with some probability
+                if(n > 34 && n < 75){
                     people.erase(it);
                 }
             } 
             }
 
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Left)){  // with mouse left click infectable people will spawn
            Person p{};
            auto mouse_position = sf::Mouse::getPosition();
            p.position(mouse_position.x - 12, mouse_position.y - 60);
@@ -205,10 +198,10 @@ int main(){
            p.setRadius(radius);
            ++n_infectable; 
            ++n_people_alive;
-           people.reserve(people.size()+10);  // metto dello spazio in piu per sicurezza che senno si bugga
+           people.reserve(people.size()+2);  
            people.push_back(p);
         }
-        if (sf::Mouse::isButtonPressed(sf::Mouse::Right)){
+        if (sf::Mouse::isButtonPressed(sf::Mouse::Right)){  // with mouse right click infected people will spawn
            Person p{};
            auto mouse_position = sf::Mouse::getPosition();
            p.position(mouse_position.x - 12, mouse_position.y - 60);
@@ -217,13 +210,13 @@ int main(){
            p.infection(1);
            ++n_infected; 
            ++n_people_alive;
-           people.reserve(people.size()+10);
+           people.reserve(people.size()+2);
            people.push_back(p);
         }  
 
         assert(n_infectable+n_infected+n_recovered == n_people_alive);
 
-        auto infectable = "Infectable:  " + std::to_string(n_infectable);
+        auto infectable = "Infectable:  " + std::to_string(n_infectable);  // some information about the epidemic
         auto infected = "Infected:  " + std::to_string(n_infected);
         auto recovered = "Recovered:  " + std::to_string(n_recovered);
         auto dead = "Dead:  " + std::to_string(n_dead);
@@ -257,13 +250,13 @@ int main(){
         if(n_infected > n_people_alive/2){
             text[5].setString(info_6);
             window.draw(text[5]);} 
-        for(auto it = people.begin(); it != people.end(); ++it) window.draw((*it).circle()); // disegna tutte le palline
-        for(int i{0}; i != 4; ++i){
+        for(auto it = people.begin(); it != people.end(); ++it) window.draw((*it).circle()); // draw all the people
+        for(int i{0}; i != 4; ++i){  // draw the text
             window.draw(text[i]);}
         window.display();
 
     }  
-    if(n_infected == 0 && n_dead != n_tot) {  
+    if(n_infected == 0 && n_people_alive != 0) {  // if there are no infected, virus is defeated
         people.erase(people.begin(), people.end());
         text.erase(text.begin(), text.end());
         sf::Text the_end;
@@ -282,7 +275,7 @@ int main(){
         window.draw(the_end);
         window.display();
         }
-    if(n_people_alive == 0){
+    if(n_people_alive == 0){          // if all the people die, humanity no longer exists
         people.erase(people.begin(), people.end());
         text.erase(text.begin(), text.end());
         sf::Text the_end;
