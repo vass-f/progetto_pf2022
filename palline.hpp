@@ -12,7 +12,7 @@
 #include <string>
 
 struct Point{    
-    double x;
+    double x; 
     double y;
 };
 
