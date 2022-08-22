@@ -75,6 +75,8 @@ class Finestra{
         
 
         bool isOpen();  //Uguale a window.isOpen() per far andare il ciclo while
+        void close();
+        bool pollEvent(sf::Event event);
         void add(double x); //aggiungo elementi al mio isto
 
         void add(std::vector<double> vettore);

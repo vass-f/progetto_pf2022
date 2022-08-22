@@ -1,3 +1,5 @@
+//Compilare con
+//g++ -Wall -Wextra -fsanitize=address -lsfml-system -lsfml-graphics -lsfml-window epidemia.cpp isto_sfml.cpp main_epidemia.cpp
 #include "epidemia.hpp"
 #include "isto.hpp"
 #include "isto_sfml.hpp"
@@ -21,7 +23,7 @@ int main(){
         epidemia virus(beta, gamma, p);
         while(scelta != 'x' && scelta != 'c'){
           std::cout<<"Cosa vuoi visualizzare?\nDigita 'a' per l'evoluzione numerica della pandemia";
-          std::cout<<"\nDigita 'b' per la visualizzazione grafica della pandemia\nDigita c per inserire altri valori\n";
+          std::cout<<"\nDigita 'b' per la visualizzazione grafica della pandemia\nDigita 'c' per inserire altri valori\n";
           std::cout<<"Digita 'x' per terminare il programma\n";
           std::cin>>scelta;
           if(scelta == 'a'){
@@ -31,8 +33,10 @@ int main(){
             for(int i = 0; i != 30; ++i){
                 clone.evolve();
                 clone.stampa_p();
-                sf::sleep(sf::milliseconds(100));
-                //Stessa cosa di sotto
+                sf::sleep(sf::milliseconds(200));
+                //Aggiungere una cosa che permette di uscire dalla visualizzazione dei dati schiacciando esc
+                //e fare in modo di uscire se l'epidemia finisce, probabilmente meglio mettere una funzione all'interno
+                //della stessa classe epidemia (bool?)
             }
           }
 
@@ -55,10 +59,28 @@ int main(){
                 if(s == 'b') finestra.add(clone.approssima().I);
                 if(s == 'c') finestra.add(clone.approssima().R);
 
+                /*sf::Event event;
+                while(finestra.pollEvent(event)){   
+                      if(event.type == sf::Event::Closed){
+                          finestra.close();
+                          std::cout<<"a";}
+                      if(event.type == sf::Event::KeyPressed){
+                        if(event.key.code == sf::Keyboard::Escape){
+                          std::cout<<"b";
+                          finestra.close();}
+                        if(event.key.code == sf::Keyboard::Enter){
+                          clone.evolve();
+                          if(s == 'a') finestra.add(clone.approssima().S);
+                          if(s == 'b') finestra.add(clone.approssima().I);
+                          if(s == 'c') finestra.add(clone.approssima().R);
+                          std::cout<<"c";
+                        }
+                      }
+                        DA aggiustare
+                }*/
+
                 finestra.draw();
                 sf::sleep(sf::milliseconds(400));
-                //Aggiungere una cosa che permette di uscire dalla finestra grafica schiacciando esc
-                //e permettere di andare avanti di un giorno schiacciando invio
             }
           }
         };

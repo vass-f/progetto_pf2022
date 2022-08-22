@@ -4,6 +4,10 @@ larghezza e lunghezza della finestra, in questo modo tutto dovrebbe essere al pr
 tutto in proporzione costante qualsiasi modifica si faccia alla finestra*/
 
 bool Finestra::isOpen() { return window_.isOpen(); }
+void Finestra::close() { window_.close(); }
+bool Finestra::pollEvent(sf::Event event){ 
+    std::cout<<"Z";
+    return window_.pollEvent(event); }
 
 void Finestra::add(double x){
     data_.add(x);
@@ -99,7 +103,7 @@ void Finestra::draw(){
     window_.clear();
 
     //Disegno tutto quello che c'è da disegnare
-    window_.draw(crea_text("o", sf::Vector2f(origine.x - (0.1)*origine.x, origine.y + (0.01)*origine.y)));
+    window_.draw(crea_text("o", sf::Vector2f(origine.x - (0.1)*origine.x, origine.y + (0.01)*origine.y))); //L'origine degli assi (simbolo)
     window_.draw(asse_x);
     window_.draw(asse_y);
     window_.draw(punta_x);
