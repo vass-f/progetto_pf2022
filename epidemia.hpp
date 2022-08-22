@@ -15,14 +15,14 @@ inline bool operator==(popolazione p1, popolazione p2){
 
 class epidemia{
     private:
-        double beta{};
-        double gamma{};
+        double beta_{};
+        double gamma_{};
         popolazione p_{};
         int N_{};
         bool modello_{}; //Se vogliamo implementare
     public:
-        epidemia(double b, double g, popolazione p): beta{b}, gamma{g}, p_{p}{     //Costruttore
-            if(beta >= 1 || beta <= 0 || gamma >= 1 || gamma <= 0){  //se beta e gamma non sono nell'intervallo stampa l'errore
+        epidemia(double b, double g, popolazione p): beta_{b}, gamma_{g}, p_{p}{     //Costruttore
+            if(beta_ >= 1 || beta_ <= 0 || gamma_ >= 1 || gamma_ <= 0){  //se beta e gamma non sono nell'intervallo stampa l'errore
                 throw std::runtime_error{"non valid parameters"};
             }
             N_ = p_.S + p_.I + p_.R;

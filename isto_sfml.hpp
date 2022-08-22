@@ -11,16 +11,16 @@ class Finestra{
         std::string label_x_{};
         std::string label_y_{};
         sf::Font font;
-        int const n_int_y = 7;
+        int const n_int_y = 7; //Numero di tacche sull'asse y
 
         sf::RenderWindow window_;
         unsigned display_width_ = sf::VideoMode::getDesktopMode().width / 2;
         unsigned display_height_ = sf::VideoMode::getDesktopMode().height / 2;
-        sf::Vector2f const origine = {(float)(0.13)*display_width_, (float)(0.90)*display_height_};
+        sf::Vector2f const origine = {(float)(0.13)*display_width_, (float)(0.90)*display_height_};  //Posizione di punti particolari
         sf::Vector2f const estremo_x = {(float)(0.90)*display_width_, (float)(0.90)*display_height_};
         sf::Vector2f const estremo_y = {(float)(0.13)*display_width_,(float)(0.13)*display_height_};
         double const h = estremo_y.y + (0.15)*estremo_y.y;
-        double delta_x = 15.f;
+        double delta_x = 15.f; //Spessore di ogni rettangolo
 
         //Definizione e dichiarazione degli assi, scritto qua perché sono const
         sf::VertexArray const asse_x = [&]{
@@ -101,15 +101,5 @@ class Finestra{
 
 #endif
 
-/*Deve avere come variabili private: un oggetto della classe isto dove verranno salvati i dati dell'epidemia
-                                     Non so se la parte grafica deve rientrare come variabili private della classe
-Deve riuscire a creare una finestra, a creare degli assi, le cui unità di misura riescano a scalare all'evenienza
-
-Una funzione membro per stampare che richiami l'aggiornamento (add) dei dati nella variabile isto, che a sua volta richiami
-evolve di epidemia, me lo immagino come isto.add(evolve(...))
-Capire bene come disegnare rettangoli
-Capire se posso scrivere TUTTA la parte grafica nella classe, in modo che nel main non ci andrà niente se non la definizione di un oggetto
-della classe definita qui
-*/
-
 //Forse creare una struct/classe per le barre sugli assi per gestirle meglio
+//Fare la finestra delle informazioni in alto a destra

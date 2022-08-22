@@ -8,9 +8,9 @@ void epidemia::evolve(){      //Per chiamarlo: covid.evolve();
     prima.I = p_.I;
     prima.R = p_.R;
     
-    p_.S = prima.S - (beta * prima.S * prima.I) / N();        //Calcolo le variazioni a partire da quelli iniziali
-    p_.I = prima.I + (beta * prima.S * prima.I) / N() - (gamma * prima.I);
-    p_.R = prima.R + gamma * prima.I;
+    p_.S = prima.S - (beta_ * prima.S * prima.I) / N();        //Calcolo le variazioni a partire da quelli iniziali
+    p_.I = prima.I + (beta_ * prima.S * prima.I) / N() - (gamma_ * prima.I);
+    p_.R = prima.R + gamma_ * prima.I;
     assert(round(p_.S + p_.I + p_.R) == N());     //round per evitare che (per esempio) 99.99999999 approssimi a 99
 }
 
@@ -31,8 +31,7 @@ int epidemia::N(){
     return N_;
 }
 
-popolazione epidemia::approssima(){    //funzione superflua, alla fine possiamo pure levarla completamente e mettere round 
-                                       //direttamente sul cout in "stampa_p", se tutto funziona ovviamente
+popolazione epidemia::approssima(){
     popolazione p_intero{};
     p_intero.I = round(p_.I);
     p_intero.R = round(p_.R);

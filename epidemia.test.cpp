@@ -74,15 +74,11 @@ TEST_CASE("Testing epidemia"){
         x4.evolve_t(1000);
         CHECK(x4.N() == x4.tot());
         x4.evolve_t(10000);
-        CHECK(x4.N() == x4.tot());
-        std::cout<<x4.state().S<<" "<<x4.state().I<<" "<<x4.state().R<<'\n';
+        CHECK(x4.N() == x4.tot()); 
         x4.stampa_p();
-        std::cout<<'\n';
-
+        
         x4.evolve_t(10000);
-        CHECK(x4.N() == x4.tot());
-        std::cout<<x4.state().S<<" "<<x4.state().I<<" "<<x4.state().R<<'\n';
+        CHECK(x4.N() == x4.tot());       
         x4.stampa_p();
-        std::cout<<'\n';
     }
 }
