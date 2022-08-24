@@ -42,7 +42,7 @@ popolazione epidemia::approssima(){
 }
 
 void evolve(epidemia x){    //Per chiamarlo: evolve(covid); 
-    x.evolve();             //Non funziona! non so il perché
+    x.evolve();             //Non funziona! non so il perché  // forse per l'overload? boh non so
 }  
 
 double epidemia::tot(){
