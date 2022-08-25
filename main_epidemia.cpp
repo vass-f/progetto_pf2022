@@ -65,9 +65,11 @@ int main(){
             if(s == 'b') mod = "Infetti";
             if(s == 'c') mod = "Rimossi";
             Finestra finestra("Giorni", mod);
+            //legend<double> ;
             if(s == 'a') finestra.add(clone.approssima().S);
             if(s == 'b') finestra.add(clone.approssima().I);
             if(s == 'c') finestra.add(clone.approssima().R);
+
             while(finestra.isOpen() && clone.IsOnGoing()){
                 clone.evolve();
                 if(s == 'a') finestra.add(clone.approssima().S);

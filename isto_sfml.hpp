@@ -100,6 +100,7 @@ class Finestra{
         void draw(); //Disegna tutto, chiama le funzioni per disegnare le barre e i rettangoli
 };
 
+/*
 template<typename T>
 class legend{
     private:
@@ -136,9 +137,7 @@ class legend{
     }
 
 };
-
+*/
 
 #endif
-
-//Forse creare una struct/classe per le barre sugli assi per gestirle meglio
 //Fare la finestra delle informazioni in alto a destra
