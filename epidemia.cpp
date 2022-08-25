@@ -34,8 +34,8 @@ int epidemia::N(){
 popolazione epidemia::approssima(){
     popolazione p_intero{};
     p_intero.I = round(p_.I);
-    p_intero.R = round(p_.R);
-    p_intero.S = N() - p_intero.I - p_intero.R;
+    p_intero.S = round(p_.S);
+    p_intero.R = N() - p_intero.I - p_intero.S;
 
     assert(p_intero.S + p_intero.I + p_intero.R == N()); //controllo N
     return p_intero;
@@ -47,4 +47,9 @@ void evolve(epidemia x){    //Per chiamarlo: evolve(covid);
 
 double epidemia::tot(){
     return round(p_.S + p_.I + p_.R);
+}
+
+bool epidemia::IsOnGoing(){
+    if(approssima().I == 0) return false;
+    else return true;
 }

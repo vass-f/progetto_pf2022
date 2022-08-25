@@ -27,16 +27,31 @@ int main(){
           std::cout<<"Digita 'x' per terminare il programma\n";
           std::cin>>scelta;
           if(scelta == 'a'){
+            int giorni;
+            std::cout<<"Quanti giorni di evoluzione vuoi visualizzare? (Inserisci qualsiasi numero non positivo per farla andare finché non finisce) ";
+            std::cin>>giorni;
             epidemia clone = virus;
             std::cout<<"S I R\n";
             clone.stampa_p();
-            for(int i = 0; i != 30; ++i){
+            if(giorni <= 0){
+              while(clone.IsOnGoing()){
+                  clone.evolve();
+                  clone.stampa_p();
+                  sf::sleep(sf::milliseconds(200));
+
+                  if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) break; //Non funziona perché credo non ci sia nessuna finestra aperta
+                                                                              //e sul terminale non ha effetto sfml
+                  //Aggiungere una cosa che permette di uscire dalla visualizzazione dei dati schiacciando esc
+                  //e fare in modo di uscire se l'epidemia finisce, probabilmente meglio mettere una funzione all'interno
+                  //della stessa classe epidemia (bool?)
+              }
+            }
+            else{
+              for(int i = 0; i != giorni; ++i){
                 clone.evolve();
                 clone.stampa_p();
                 sf::sleep(sf::milliseconds(200));
-                //Aggiungere una cosa che permette di uscire dalla visualizzazione dei dati schiacciando esc
-                //e fare in modo di uscire se l'epidemia finisce, probabilmente meglio mettere una funzione all'interno
-                //della stessa classe epidemia (bool?)
+              }
             }
           }
 
@@ -53,31 +68,20 @@ int main(){
             if(s == 'a') finestra.add(clone.approssima().S);
             if(s == 'b') finestra.add(clone.approssima().I);
             if(s == 'c') finestra.add(clone.approssima().R);
-            while(finestra.isOpen()){
+            while(finestra.isOpen() && clone.IsOnGoing()){
                 clone.evolve();
                 if(s == 'a') finestra.add(clone.approssima().S);
                 if(s == 'b') finestra.add(clone.approssima().I);
                 if(s == 'c') finestra.add(clone.approssima().R);
 
-                /*sf::Event event;
-                while(finestra.pollEvent(event)){   
-                      if(event.type == sf::Event::Closed){
-                          finestra.close();
-                          std::cout<<"a";}
-                      if(event.type == sf::Event::KeyPressed){
-                        if(event.key.code == sf::Keyboard::Escape){
-                          std::cout<<"b";
-                          finestra.close();}
-                        if(event.key.code == sf::Keyboard::Enter){
-                          clone.evolve();
-                          if(s == 'a') finestra.add(clone.approssima().S);
-                          if(s == 'b') finestra.add(clone.approssima().I);
-                          if(s == 'c') finestra.add(clone.approssima().R);
-                          std::cout<<"c";
-                        }
-                      }
-                        DA aggiustare
-                }*/
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+                    finestra.close();
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){
+                  clone.evolve();
+                  if(s == 'a') finestra.add(clone.approssima().S);
+                  if(s == 'b') finestra.add(clone.approssima().I);
+                  if(s == 'c') finestra.add(clone.approssima().R);
+                }
 
                 finestra.draw();
                 sf::sleep(sf::milliseconds(400));

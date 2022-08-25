@@ -54,8 +54,8 @@ class Finestra{
         }();
 
         sf::Text label_x = crea_text(label_x_, sf::Vector2f(estremo_x.x + (0.02)*estremo_x.x, origine.y));
-
         sf::Text label_y = crea_text(label_y_, sf::Vector2f(origine.x, estremo_y.y - (0.2)*estremo_y.y));
+        sf::Text label_origin = crea_text("o", sf::Vector2f(origine.x - (0.1)*origine.x, origine.y + (0.01)*origine.y));
     public:
         Finestra() {
             if(!font.loadFromFile("arial.ttf")){
@@ -76,7 +76,7 @@ class Finestra{
 
         bool isOpen();  //Uguale a window.isOpen() per far andare il ciclo while
         void close();
-        bool pollEvent(sf::Event event);
+
         void add(double x); //aggiungo elementi al mio isto
 
         void add(std::vector<double> vettore);

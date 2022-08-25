@@ -75,10 +75,30 @@ TEST_CASE("Testing epidemia"){
         CHECK(x4.N() == x4.tot());
         x4.evolve_t(10000);
         CHECK(x4.N() == x4.tot()); 
-        x4.stampa_p();
         
         x4.evolve_t(10000);
         CHECK(x4.N() == x4.tot());       
-        x4.stampa_p();
+        
+    }
+
+    SUBCASE("test IsOnGoing"){
+        popolazione p2{9999, 1, 0};
+        epidemia x5{0.9, 0.1, p2};
+
+        CHECK(x5.IsOnGoing() == true);
+        bool test;
+        double a;
+        while(x5.IsOnGoing()){
+            x5.evolve();
+            if(test){
+                CHECK(x5.approssima().S == a);
+            }
+            if(x5.state().I > 0 && x5.state().I < 0.4999){
+                test = true;
+                a = x5.approssima().S;
+                CHECK(x5.IsOnGoing() == false);
+            }
+        }
+
     }
 }
