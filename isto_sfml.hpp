@@ -19,7 +19,7 @@ class Finestra{
         sf::Vector2f const origine = {(float)(0.13)*display_width_, (float)(0.90)*display_height_};  //Posizione di punti particolari
         sf::Vector2f const estremo_x = {(float)(0.90)*display_width_, (float)(0.90)*display_height_};
         sf::Vector2f const estremo_y = {(float)(0.13)*display_width_,(float)(0.13)*display_height_};
-        double const h = estremo_y.y + (0.15)*estremo_y.y;
+        double const h = (1.15)*estremo_y.y;
         double delta_x = 15.f; //Spessore di ogni rettangolo
 
         //Definizione e dichiarazione degli assi, scritto qua perché sono const
@@ -59,7 +59,7 @@ class Finestra{
     public:
         Finestra() {
             if(!font.loadFromFile("arial.ttf")){
-                throw std::runtime_error("Il font non è stato caricato");
+                throw std::runtime_error("Could not load font");
             }
             window_.create(sf::VideoMode(display_width_, display_height_), "Epidemia");
         };
@@ -67,12 +67,12 @@ class Finestra{
         Finestra(std::string label_x, std::string label_y, unsigned width = sf::VideoMode::getDesktopMode().width / 2, unsigned height = sf::VideoMode::getDesktopMode().height / 2) 
             : label_x_{label_x}, label_y_{label_y}, display_width_{width}, display_height_{height} {
             if(!font.loadFromFile("arial.ttf")){
-                throw std::runtime_error("Il font non è stato caricato");
+                throw std::runtime_error("Could not load font");
             }
             window_.create(sf::VideoMode(display_width_, display_height_), "Epidemia");
         }
 
-        
+
 
         bool isOpen();  //Uguale a window.isOpen() per far andare il ciclo while
         void close();
@@ -98,6 +98,43 @@ class Finestra{
                            //dipende da delta_x e i
 
         void draw(); //Disegna tutto, chiama le funzioni per disegnare le barre e i rettangoli
+};
+
+template<typename T>
+class legend{
+    private:
+        std::vector<sf::Text> text(3);
+        sf::Font comment_font;
+
+    public:
+    legend() {
+        if (!comment_font.loadFromFile("comment_font.ttf")){
+        throw std::runtime_error{"Could not load comment font"};
+        }
+    }
+    void setLegend(popolazione p){
+        for(int i{0}; i != 3; ++i){   
+        text[i].setFont(comment_font);
+        }
+
+        text[0].setFillColor(sf::Color::Blue);
+        text[1].setFillColor(sf::Color::Red);
+        text[2].setFillColor(sf::Color::Green);
+        for(int i{0}; i != n_text; ++i){
+        text[i].setPosition(0.8*sf::VideoMode::getDesktopMode().width / 2,10+30*i);
+        }
+        auto susceptible = "Susceptible:  " + std::to_string(p.S);  // some information about the epidemic
+        auto infected = "Infected:  " + std::to_string(p.I);
+        auto recovered = "Recovered:  " + std::to_string(p.R);
+        text[0].setString(susceptible);
+        text[1].setString(infected);
+        text[2].setString(recovered);
+        for(int i{0}; i != 4; ++i){  // draw the text
+            window.draw(text[i]);
+        }
+        window.display();
+    }
+
 };
 
 

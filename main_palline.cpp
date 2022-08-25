@@ -39,13 +39,13 @@ int main(){
     sf::Clock clock;
     srand(time(0));  
     
-    std::cout<< "Set the initial number of people" << '\n';
+    std::cout<< "Set the initial number of people (maximum 350)" << '\n';
     std::cin >> n_tot;
-    if (n_tot <= 0){
+    if (n_tot <= 0 || n_tot > 350){
         throw std::runtime_error{"Non valid parameters"};
     }
     std::cout<< "Set the initial number of infected people" << '\n';
-    std::cin >> first_infected; 
+    std::cin >> first_infected;
     if (first_infected > n_tot){
         throw std::runtime_error{"Non valid parameters, infected people can't be more than the total number of people"};
     }
@@ -89,13 +89,13 @@ int main(){
 
     if (n_infected != 0){for (auto it = people.begin(); it < people.end(); ++it){
             auto n{rand() % 2000};              // random number that will be used for recovering and death rate    
-            if((*it).position().x < 0.1 && copysign(1, (*it).velocity().x) == -1)   // people "bounce" at the end of the screen 
-            {(*it).velocity((*it).velocity().x * (-1), (*it).velocity().y);}     // copysign function is used because only the people that are going directed against
-            if((*it).position().y < 0.1 && copysign(1, (*it).velocity().y) == -1)  //the wall should "bounce", if not sometimes could happen that
-            {(*it).velocity((*it).velocity().x, (*it).velocity().y * (-1));}     // some people get trapped at the end of the screen
-            if((*it).position().x > (display_width - 20) && copysign(1, (*it).velocity().x) == 1)
+            if((*it).position().x < 0.1 && (*it).velocity().x < 0)   // people "bounce" at the end of the screen 
+            {(*it).velocity((*it).velocity().x * (-1), (*it).velocity().y);}     // the information about the sign is used because only 
+            if((*it).position().y < 0.1 && (*it).velocity().y < 0)  // people that are going directed against the wall should "bounce", if not sometimes 
+            {(*it).velocity((*it).velocity().x, (*it).velocity().y * (-1));}     // could happen that some people get trapped at the end of the screen
+            if((*it).position().x > (display_width - 20) && (*it).velocity().x > 0)
             {(*it).velocity((*it).velocity().x * (-1), (*it).velocity().y);}   
-            if((*it).position().y > (display_height - 70) && copysign(1, (*it).velocity().y) == 1) 
+            if((*it).position().y > (display_height - 70) && (*it).velocity().y > 0) 
             {(*it).velocity((*it).velocity().x, (*it).velocity().y * (-1));}  
             (*it).evolve_p();                    
             (*it).evolve_v();                    

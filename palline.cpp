@@ -37,13 +37,13 @@ void Person::evolve_p(){
 }
 void Person::evolve_v(){   
   auto a = rand() % 8;
-  if(a == 1 && infection() != 3 && copysign(1, velocity().x) == 1){  // dead's velocity do not change, they are static
-    velocity(velocity().x - (((rand() % 10) - 4) / 8.), velocity().y);} // copysign is used beacause people should more probably decrease their velocity
-  if(a == 2 && infection() != 3 && copysign(1, velocity().x) == -1){  // to get a more realistic motion effect
+  if(a == 1 && infection() != 3 && velocity().x > 0){  // dead's velocity do not change, they are static
+    velocity(velocity().x - (((rand() % 10) - 4) / 8.), velocity().y);} // the information about the sign is used beacause people should more 
+  if(a == 2 && infection() != 3 && velocity().x < 0){  // probably decrease their velocity to get a more realistic motion effect
     velocity(velocity().x + (((rand() % 10) - 4) / 8.), velocity().y);}
-  if(a == 3 && infection() != 3 && copysign(1, velocity().y) == 1){
+  if(a == 3 && infection() != 3 && velocity().y > 0){
     velocity(velocity().x, velocity().y - (((rand() % 10) - 4) / 8.));}
-  if(a == 4 && infection() != 3 && copysign(1, velocity().y) == -1){
+  if(a == 4 && infection() != 3 && velocity().y < 0){
     velocity(velocity().x, velocity().y + (((rand() % 10) - 4) / 8.));}
 } 
 
