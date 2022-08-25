@@ -72,8 +72,6 @@ class Finestra{
             window_.create(sf::VideoMode(display_width_, display_height_), "Epidemia");
         }
 
-
-
         bool isOpen();  //Uguale a window.isOpen() per far andare il ciclo while
         void close();
 

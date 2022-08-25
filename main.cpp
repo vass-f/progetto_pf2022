@@ -1,72 +1,177 @@
-//Per compilare
-//g++ -Wall -Wextra -fsanitize=address -lsfml-system -lsfml-graphics -lsfml-window palline.cpp main_palline.cpp
+#include "epidemia.hpp"
+#include "isto.hpp"
+#include "isto_sfml.hpp"
 #include "palline.hpp"
 
 int main(){
-    int infection_distance{60};  
-    int radius{10}; // circle's radius
-    int first_infected{}; 
-    int n_tot{}; // total number of people
-    int const pace{30}; 
-    int const fps{60}; // frame per second
-    int const n_text{6};  // number of texts in the legend
-    std::vector<sf::Text> text(n_text);
-    sf::Font data_font;
-    sf::Font comment_font;
-    if (!data_font.loadFromFile("data_font.ttf")){
-    throw std::runtime_error{"Could not load data font"};
-    }
-    if (!comment_font.loadFromFile("comment_font.ttf")){
-    throw std::runtime_error{"Could not load comment font"};
-    }
-    for(int i{0}; i != 4; ++i){   
-    text[i].setFont(comment_font);
-    }
-    for(int i{4}; i != 6; ++i){   
-    text[i].setFont(data_font);
-    }
+    char scelta_ = ' ';
+    std::cout<<"Benvenuto\n";
+    while(scelta_ != 'x' && (scelta_ == 'a' || scelta_ == 'b' || scelta_ == ' ')){
+        std::cout<<"Scegli il programma che ti interessa vedere.\na)Epidemia\nb)Automi cellulari\nx)Esci\n";
+        std::cin>>scelta_;
 
-    text[0].setFillColor(sf::Color::Blue);
-    text[1].setFillColor(sf::Color::Red);
-    text[2].setFillColor(sf::Color::Green);
-    text[3].setFillColor(sf::Color::Black);
-    text[4].setFillColor(sf::Color::Black);
-    text[5].setFillColor(sf::Color::Red);
-    for(int i{0}; i != n_text; ++i){
-        text[i].setPosition(20,10+30*i);
-    }
+        //////////////////////
+        //PROGRAMMA EPIDEMIA//
+        //////////////////////
 
-    sf::Clock clock;
-    srand(time(0));  
-    
-    std::cout<< "Set the initial number of people (maximum 350)" << '\n';
-    std::cin >> n_tot;
-    if (n_tot <= 0 || n_tot > 350){
-        throw std::runtime_error{"Non valid parameters"};
-    }
-    std::cout<< "Set the initial number of infected people" << '\n';
-    std::cin >> first_infected;
-    if (first_infected > n_tot){
-        throw std::runtime_error{"Non valid parameters, infected people can't be more than the total number of people"};
-    }
-    if (first_infected <= 0){
-        throw std::runtime_error{"Non valid parameters"};
-    }
-        
-    int n_people_alive{n_tot};
-    int n_infectable{n_tot-first_infected};
-    int n_infected{first_infected};
-    int n_recovered{};
-    int n_dead{};
-    
-    unsigned const display_width = sf::VideoMode::getDesktopMode().width;   
-    unsigned const display_height = sf::VideoMode::getDesktopMode().height;
+        if(scelta_ == 'a'){
+            double beta, gamma;
+            popolazione p{};
+            char scelta = ' ';
+            while(scelta != 'x' && (scelta == 'a' || scelta == 'b' || scelta == 'c' || scelta == ' ')){
+                scelta = ' ';
+                std::cout<<"Inserisci il numero totale della popolazione: ";
+                std::cin>>p.S;
+                std::cout<<"Inserisci il numero di infetti: ";
+                std::cin>>p.I;
+                p.S -= p.I;
+                std::cout<<"Inserisci un valore per beta e un valore per gamma\nBeta: ";
+                std::cin>>beta;
+                std::cout<<"Gamma: ";
+                std::cin>>gamma;
+                epidemia virus(beta, gamma, p);
 
-    sf::RenderWindow window(sf::VideoMode(display_width, display_height), "Covid epidemic");
-    window.setFramerateLimit(fps);
+                while(scelta != 'x' && scelta != 'c'){
+                    std::cout<<"Cosa vuoi visualizzare?\nDigita 'a' per l'evoluzione numerica della pandemia";
+                    std::cout<<"\nDigita 'b' per la visualizzazione grafica della pandemia\nDigita 'c' per inserire altri valori\n";
+                    std::cout<<"Digita 'x' per terminare il programma\n";
+                    std::cin>>scelta;
+                    if(scelta == 'a'){
+                        int giorni;
+                        std::cout<<"Quanti giorni di evoluzione vuoi visualizzare? (Inserisci qualsiasi numero non positivo per farla andare finché non finisce) ";
+                        std::cin>>giorni;
+                        epidemia clone = virus;
+                        std::cout<<"S I R\n";
+                        clone.stampa_p();
+                        if(giorni <= 0){
+                            while(clone.IsOnGoing()){
+                                clone.evolve();
+                                clone.stampa_p();
+                                sf::sleep(sf::milliseconds(200));
 
-    std::vector<Person> people;    // people vector
-    for(int i{0}; i != n_tot; ++i){   // insert n_tot people
+                                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) break; //Non funziona perché credo non ci sia nessuna finestra aperta
+                                                                                            //e sul terminale non ha effetto sfml
+                                //Aggiungere una cosa che permette di uscire dalla visualizzazione dei dati schiacciando esc
+                                //e fare in modo di uscire se l'epidemia finisce, probabilmente meglio mettere una funzione all'interno
+                                //della stessa classe epidemia (bool?)
+                              }
+                        }
+                        else{
+                            for(int i = 0; i != giorni; ++i){
+                              clone.evolve();
+                              clone.stampa_p();
+                              sf::sleep(sf::milliseconds(200));
+                            }
+                            }
+                        }
+
+                    if(scelta == 'b'){
+                  char s{};
+                  std::cout<<"Che grafico ti inseressa?\nDigita 'a' per i suscettibili\nDigita 'b' per gli infetti\nDigita 'c' per i rimossi\n";
+                  std::cin>>s;
+                  epidemia clone = virus;
+                  std::string mod{};
+                  if(s == 'a') mod = "Suscettibili";
+                  if(s == 'b') mod = "Infetti";
+                  if(s == 'c') mod = "Rimossi";
+                  Finestra finestra("Giorni", mod);
+                  //legend<double> ;
+                  if(s == 'a') finestra.add(clone.approssima().S);
+                  if(s == 'b') finestra.add(clone.approssima().I);
+                  if(s == 'c') finestra.add(clone.approssima().R);
+
+                  while(finestra.isOpen() && clone.IsOnGoing()){
+                      clone.evolve();
+                      if(s == 'a') finestra.add(clone.approssima().S);
+                      if(s == 'b') finestra.add(clone.approssima().I);
+                      if(s == 'c') finestra.add(clone.approssima().R);
+
+                      if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+                          finestra.close();
+                      if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){
+                        clone.evolve();
+                        if(s == 'a') finestra.add(clone.approssima().S);
+                        if(s == 'b') finestra.add(clone.approssima().I);
+                        if(s == 'c') finestra.add(clone.approssima().R);
+                      }
+
+                            finestra.draw();
+                            sf::sleep(sf::milliseconds(400));
+                        }
+                    }
+                };      
+            };      
+        }
+
+        //////////////////////////////
+        //PROGRAMMA AUTOMI CELLULARI//
+        //////////////////////////////
+
+        if(scelta_ == 'b'){
+            int infection_distance{60};  
+            int radius{10}; // circle's radius
+            int first_infected{}; 
+            int n_tot{}; // total number of people
+            int const pace{30}; 
+            int const fps{60}; // frame per second
+            int const n_text{6};  // number of texts in the legend
+            std::vector<sf::Text> text(n_text);
+            sf::Font data_font;
+            sf::Font comment_font;
+            if (!data_font.loadFromFile("data_font.ttf")){
+            throw std::runtime_error{"Could not load data font"};
+            }
+            if (!comment_font.loadFromFile("comment_font.ttf")){
+            throw std::runtime_error{"Could not load comment font"};
+            }
+            for(int i{0}; i != 4; ++i){   
+            text[i].setFont(comment_font);
+            }
+            for(int i{4}; i != 6; ++i){   
+            text[i].setFont(data_font);
+            }
+
+            text[0].setFillColor(sf::Color::Blue);
+            text[1].setFillColor(sf::Color::Red);
+            text[2].setFillColor(sf::Color::Green);
+            text[3].setFillColor(sf::Color::Black);
+            text[4].setFillColor(sf::Color::Black);
+            text[5].setFillColor(sf::Color::Red);
+            for(int i{0}; i != n_text; ++i){
+                text[i].setPosition(20,10+30*i);
+            }
+
+            sf::Clock clock;
+            srand(time(0));  
+
+            std::cout<< "Set the initial number of people (maximum 350)" << '\n';
+            std::cin >> n_tot;
+            if (n_tot <= 0 || n_tot > 350){
+                throw std::runtime_error{"Non valid parameters"};
+            }
+            std::cout<< "Set the initial number of infected people" << '\n';
+            std::cin >> first_infected;
+            if (first_infected > n_tot){
+                throw std::runtime_error{"Non valid parameters, infected people can't be more than the total number of people"};
+            }
+            if (first_infected <= 0){
+            throw std::runtime_error{"Non valid parameters"};
+       }
+
+        int n_people_alive{n_tot};
+        int n_infectable{n_tot-first_infected};
+        int n_infected{first_infected};
+        int n_recovered{};
+        int n_dead{};
+
+        unsigned const display_width = sf::VideoMode::getDesktopMode().width;   
+        unsigned const display_height = sf::VideoMode::getDesktopMode().height;
+
+        sf::RenderWindow window(sf::VideoMode(display_width, display_height), "Covid epidemic");
+        window.setFramerateLimit(fps);
+
+        std::vector<Person> people;    // people vector
+        for(int i{0}; i != n_tot; ++i){   // insert n_tot people
         Person p{};
         p.position((rand() % (display_width - 20)), (rand() % (display_height - 70)));
         p.velocity(((rand() % (pace + 1)) - pace/2) / 20., ((rand() % (pace + 1)) - pace/2) / 20.);
@@ -248,7 +353,8 @@ int main(){
         }
         window.draw(the_end);
         window.display();
+        }
+        }
     }
     }
-    return 0;
 }
