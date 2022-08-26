@@ -8,8 +8,9 @@
 int main(){
     char scelta_ = ' ';
     std::cout<<"Benvenuto\n";
-    while(scelta_ != 'x' && (scelta_ == 'a' || scelta_ == 'b' || scelta_ == ' ')){
-        std::cout<<"Scegli il programma che ti interessa vedere.\na)Epidemia\nb)Automi cellulari\nx)Esci\n";
+    while(scelta_ != 'x'){
+        scelta_ = ' ';
+        std::cout<<"Scegli il programma che ti interessa vedere.\na)Modello SIR\nb)Automi cellulari\nx)Esci\n";
         std::cin>>scelta_;
 
         //////////////////////
@@ -68,37 +69,47 @@ int main(){
                         }
 
                     if(scelta == 'b'){
-                  char s{};
-                  std::cout<<"Che grafico ti inseressa?\nDigita 'a' per i suscettibili\nDigita 'b' per gli infetti\nDigita 'c' per i rimossi\n";
-                  std::cin>>s;
-                  epidemic clone = virus;
-                  std::string mod{};
-                  if(s == 'a') mod = "Suscettibili";
-                  if(s == 'b') mod = "Infetti";
-                  if(s == 'c') mod = "Rimossi";
-                  Finestra finestra("Giorni", mod);
-                  //legend<double> ;
-                  if(s == 'a') finestra.add(clone.approx().S);
-                  if(s == 'b') finestra.add(clone.approx().I);
-                  if(s == 'c') finestra.add(clone.approx().R);
-
-                  while(finestra.isOpen() && clone.IsOnGoing()){
-                      clone.evolve();
-                      if(s == 'a') finestra.add(clone.approx().S);
-                      if(s == 'b') finestra.add(clone.approx().I);
-                      if(s == 'c') finestra.add(clone.approx().R);
-
-                      if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
-                          finestra.close();
-                      if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){
-                        clone.evolve();
+                        char s{};
+                        std::cout<<"Che grafico ti inseressa?\nDigita 'a' per i suscettibili\nDigita 'b' per gli infetti\nDigita 'c' per i rimossi\n";
+                        std::cin>>s;
+                        epidemic clone = virus;
+                        std::string mod{};
+                        if(s == 'a') mod = "Suscettibili";
+                        if(s == 'b') mod = "Infetti";
+                        if(s == 'c') mod = "Rimossi";
+                        Finestra finestra("Giorni", mod);
+                        //legend<double> ;
                         if(s == 'a') finestra.add(clone.approx().S);
                         if(s == 'b') finestra.add(clone.approx().I);
                         if(s == 'c') finestra.add(clone.approx().R);
-                      }
+
+                        while(finestra.isOpen() && clone.IsOnGoing()){
+
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){ //Mette in pausa tutto, funziona in un modo un po' strano
+                                bool space = true;
+                                sf::sleep(sf::milliseconds(150));
+                                while(space){
+                                    if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+                                        space = false;
+                                }
+                            }
+                            clone.evolve();
+                            if(s == 'a') finestra.add(clone.approx().S);
+                            if(s == 'b') finestra.add(clone.approx().I);
+                            if(s == 'c') finestra.add(clone.approx().R);
+
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+                                finestra.close();
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){
+                                clone.evolve();
+                                if(s == 'a') finestra.add(clone.approx().S);
+                                if(s == 'b') finestra.add(clone.approx().I);
+                                if(s == 'c') finestra.add(clone.approx().R);
+                            }
 
                             finestra.draw();
                             sf::sleep(sf::milliseconds(400));
+                            
                         }
                     }
                 };      
@@ -194,7 +205,7 @@ int main(){
                 window.close();
         }
 
-    if (n_infected != 0){for (auto it = people.begin(); it < people.end(); ++it){
+        if (n_infected != 0){for (auto it = people.begin(); it < people.end(); ++it){
             auto n{rand() % 2000};              // random number that will be used for recovering and death rate    
             if((*it).position().x < 0.1 && (*it).velocity().x < 0)   // people "bounce" at the end of the screen 
             {(*it).velocity((*it).velocity().x * (-1), (*it).velocity().y);}     // the information about the sign is used because only 
@@ -277,7 +288,20 @@ int main(){
            ++n_people_alive;
            people.reserve(people.size()+2);
            people.push_back(p);
-        }    
+        } 
+
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)){
+            window.close();
+        }   
+
+        /*if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){ Qua va male non so perché
+            bool space = true;
+            sf::sleep(sf::milliseconds(400));
+            while(space){
+                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) 
+                    space = false;
+            } 
+        }*/
 
         assert(n_infectable+n_infected+n_recovered == n_people_alive);
 
@@ -340,23 +364,23 @@ int main(){
         window.display();
         }
     if(n_people_alive == 0){          // if all the people die, humanity no longer exists
-        sf::Text the_end;
-        the_end.setPosition(display_width/7,display_height/3);
-        the_end.setCharacterSize(display_height/10);
-        the_end.setFont(data_font);
-        the_end.setString("Coronavirus defeated Humanity \n                           Try again");
-        int t = clock.getElapsedTime().asSeconds();
-        if(t % 2 == 0){
-            window.clear(sf::Color::Red);
-            the_end.setFillColor(sf::Color::Black);
-        } else {
-            window.clear(sf::Color::Blue);
-            the_end.setFillColor(sf::Color::Yellow);
+            sf::Text the_end;
+            the_end.setPosition(display_width/7,display_height/3);
+            the_end.setCharacterSize(display_height/10);
+            the_end.setFont(data_font);
+            the_end.setString("Coronavirus defeated Humanity \n                           Try again");
+            int t = clock.getElapsedTime().asSeconds();
+            if(t % 2 == 0){
+                window.clear(sf::Color::Red);
+                the_end.setFillColor(sf::Color::Black);
+            } else {
+                window.clear(sf::Color::Blue);
+                the_end.setFillColor(sf::Color::Yellow);
+                }
+                window.draw(the_end);
+                window.display();
+                }
+            }
         }
-        window.draw(the_end);
-        window.display();
-        }
-        }
-    }
     }
 }
