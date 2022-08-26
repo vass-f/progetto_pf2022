@@ -1,4 +1,6 @@
-#include "epidemia.hpp"
+//Per compilare
+//g++ -Wall -Wextra -fsanitize=address -lsfml-system -lsfml-window -lsfml-graphics epidemia.cpp isto_sfml.cpp palline.cpp main.cpp
+#include "epidemic.hpp"
 #include "isto.hpp"
 #include "isto_sfml.hpp"
 #include "palline.hpp"
@@ -16,7 +18,7 @@ int main(){
 
         if(scelta_ == 'a'){
             double beta, gamma;
-            popolazione p{};
+            population p{};
             char scelta = ' ';
             while(scelta != 'x' && (scelta == 'a' || scelta == 'b' || scelta == 'c' || scelta == ' ')){
                 scelta = ' ';
@@ -25,28 +27,28 @@ int main(){
                 std::cout<<"Inserisci il numero di infetti: ";
                 std::cin>>p.I;
                 p.S -= p.I;
-                std::cout<<"Inserisci un valore per beta e un valore per gamma\nBeta: ";
+                std::cout<<"Inserisci un valore per beta e un valore per gamma\nBeta (probabilità di contagio): ";
                 std::cin>>beta;
-                std::cout<<"Gamma: ";
+                std::cout<<"Gamma (probabilità di terminare la malattia): "; //E' formalmente probabilità di guarire o morire
                 std::cin>>gamma;
-                epidemia virus(beta, gamma, p);
+                epidemic virus(beta, gamma, p);
 
                 while(scelta != 'x' && scelta != 'c'){
                     std::cout<<"Cosa vuoi visualizzare?\nDigita 'a' per l'evoluzione numerica della pandemia";
                     std::cout<<"\nDigita 'b' per la visualizzazione grafica della pandemia\nDigita 'c' per inserire altri valori\n";
-                    std::cout<<"Digita 'x' per terminare il programma\n";
+                    std::cout<<"Digita 'x' per tornare al menù\n";
                     std::cin>>scelta;
                     if(scelta == 'a'){
                         int giorni;
                         std::cout<<"Quanti giorni di evoluzione vuoi visualizzare? (Inserisci qualsiasi numero non positivo per farla andare finché non finisce) ";
                         std::cin>>giorni;
-                        epidemia clone = virus;
+                        epidemic clone = virus;
                         std::cout<<"S I R\n";
-                        clone.stampa_p();
+                        clone.print_p();
                         if(giorni <= 0){
                             while(clone.IsOnGoing()){
                                 clone.evolve();
-                                clone.stampa_p();
+                                clone.print_p();
                                 sf::sleep(sf::milliseconds(200));
 
                                 if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) break; //Non funziona perché credo non ci sia nessuna finestra aperta
@@ -59,7 +61,7 @@ int main(){
                         else{
                             for(int i = 0; i != giorni; ++i){
                               clone.evolve();
-                              clone.stampa_p();
+                              clone.print_p();
                               sf::sleep(sf::milliseconds(200));
                             }
                             }
@@ -69,30 +71,30 @@ int main(){
                   char s{};
                   std::cout<<"Che grafico ti inseressa?\nDigita 'a' per i suscettibili\nDigita 'b' per gli infetti\nDigita 'c' per i rimossi\n";
                   std::cin>>s;
-                  epidemia clone = virus;
+                  epidemic clone = virus;
                   std::string mod{};
                   if(s == 'a') mod = "Suscettibili";
                   if(s == 'b') mod = "Infetti";
                   if(s == 'c') mod = "Rimossi";
                   Finestra finestra("Giorni", mod);
                   //legend<double> ;
-                  if(s == 'a') finestra.add(clone.approssima().S);
-                  if(s == 'b') finestra.add(clone.approssima().I);
-                  if(s == 'c') finestra.add(clone.approssima().R);
+                  if(s == 'a') finestra.add(clone.approx().S);
+                  if(s == 'b') finestra.add(clone.approx().I);
+                  if(s == 'c') finestra.add(clone.approx().R);
 
                   while(finestra.isOpen() && clone.IsOnGoing()){
                       clone.evolve();
-                      if(s == 'a') finestra.add(clone.approssima().S);
-                      if(s == 'b') finestra.add(clone.approssima().I);
-                      if(s == 'c') finestra.add(clone.approssima().R);
+                      if(s == 'a') finestra.add(clone.approx().S);
+                      if(s == 'b') finestra.add(clone.approx().I);
+                      if(s == 'c') finestra.add(clone.approx().R);
 
                       if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
                           finestra.close();
                       if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){
                         clone.evolve();
-                        if(s == 'a') finestra.add(clone.approssima().S);
-                        if(s == 'b') finestra.add(clone.approssima().I);
-                        if(s == 'c') finestra.add(clone.approssima().R);
+                        if(s == 'a') finestra.add(clone.approx().S);
+                        if(s == 'b') finestra.add(clone.approx().I);
+                        if(s == 'c') finestra.add(clone.approx().R);
                       }
 
                             finestra.draw();

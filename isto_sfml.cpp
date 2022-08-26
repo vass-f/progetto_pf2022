@@ -10,11 +10,11 @@ void Finestra::add(double x){
     data_.add(x);
 }
 
-void Finestra::add(std::vector<double> vettore){
-    data_.add(vettore);
+void Finestra::add(std::vector<double> vector){
+    data_.add(vector);
 }
 
-sf::Text Finestra::crea_text(std::string string, sf::Vector2f position){ //Capire perché se la dimensione del carattere gliela passo come
+sf::Text Finestra::create_text(std::string string, sf::Vector2f position){ //Capire perché se la dimensione del carattere gliela passo come
                                                                          //parametro fissato da problemi (int grandezza = 10)
     sf::Text text;
     text.setFont(font);
@@ -24,13 +24,13 @@ sf::Text Finestra::crea_text(std::string string, sf::Vector2f position){ //Capir
     return text;
 }
 
-sf::VertexArray Finestra::crea_rettangolo(double val, int i){ //L'altezza di un rettangolo non deve essere calcolata con val * h 
+sf::VertexArray Finestra::create_rettangolo(double val, int i){ //L'altezza di un rettangolo non deve essere calcolata con val * h 
                                                     //Perché i pixel sulle y vanno dall'alto verso l'alto, più è piccolo più è verso l'alto
     sf::VertexArray r(sf::Quads, 4);
-    r[0].position = sf::Vector2f(origine.x + i * delta_x, origine.y);
-    r[1].position = sf::Vector2f(origine.x + i * delta_x, h + (1-val)*(origine.y - h));
-    r[2].position = sf::Vector2f(origine.x + (i + 1) * delta_x, h + (1-val)*(origine.y - h));
-    r[3].position = sf::Vector2f(origine.x + (i + 1) * delta_x, origine.y);
+    r[0].position = sf::Vector2f(origin.x + i * delta_x, origin.y);
+    r[1].position = sf::Vector2f(origin.x + i * delta_x, h + (1-val)*(origin.y - h));
+    r[2].position = sf::Vector2f(origin.x + (i + 1) * delta_x, h + (1-val)*(origin.y - h));
+    r[3].position = sf::Vector2f(origin.x + (i + 1) * delta_x, origin.y);
 
     return r;
 }
@@ -41,28 +41,28 @@ void Finestra::draw_rectangle(){
     auto end = data.end();
     int i = 0;
     double max = data_.max();
-    while((estremo_x.x - origine.x) / delta_x < data.size()) { delta_x -= 0.1; }; //Se ho più rettangoli di quanti ne entrano 
+    while((x_extreme.x - origin.x) / delta_x < data.size()) { delta_x -= 0.1; }; //Se ho più rettangoli di quanti ne entrano 
                                                                                   //diminiusci la larghezza degli stessi
     for(; it != end; ++it){
         auto altezza = (*it) / max; //Altezza è di fatto un coefficiente compreso tra 0 e 1, più il dato è grande e più è vicino a 1
-        auto r = crea_rettangolo(altezza, i); //e quindi più il rettangolo sarà alto.
+        auto r = create_rettangolo(altezza, i); //e quindi più il rettangolo sarà alto.
         window_.draw(r);
         ++i;
     }
 }
 
-sf::VertexArray Finestra::crea_barra_asse_y(double altezza){
+sf::VertexArray Finestra::create_y_axis_bar(double heigh){
     sf::VertexArray b(sf::LineStrip, 2);
-    b[0].position = sf::Vector2f(origine.x + (0.06)*origine.x, altezza);
-    b[1].position = sf::Vector2f(origine.x - (0.06)*origine.x, altezza);
+    b[0].position = sf::Vector2f(origin.x + (0.06)*origin.x, heigh);
+    b[1].position = sf::Vector2f(origin.x - (0.06)*origin.x, heigh);
 
     return b;
 }
 
-sf::VertexArray Finestra::crea_barra_asse_x(double distanza){
+sf::VertexArray Finestra::create_x_axis_bar(double distance){
     sf::VertexArray b(sf::LineStrip, 2);
-    b[0].position = sf::Vector2f(distanza, origine.y + (0.01)*origine.y);
-    b[1].position = sf::Vector2f(distanza, origine.y - (0.01)*origine.y);
+    b[0].position = sf::Vector2f(distance, origin.y + (0.01)*origin.y);
+    b[1].position = sf::Vector2f(distance, origin.y - (0.01)*origin.y);
     
     return b;
 }
@@ -72,19 +72,19 @@ void Finestra::draw_barre(){
     //Creo, richiamando l'opportuna funzione, e disegno le barre dell'asse y con i rispettivi valori
     for(int i = 1; i != n_int_y + 1; ++i){
         double val = (double)(i) / (double)(n_int_y); //Le barre sono equidistanti, val è la frazione a cui andrà la barra
-        auto posizione = h + (1 - val)*(origine.y - h); //h è l'altezza massima, ma il valore della posizione cresce verso il basso
-        auto barra = crea_barra_asse_y(posizione);
+        auto posizione = h + (1 - val)*(origin.y - h); //h è l'altezza massima, ma il valore della posizione cresce verso il basso
+        auto barra = create_y_axis_bar(posizione);
         window_.draw(barra);
-        window_.draw(crea_text(std::to_string(int(max) - int((max / n_int_y) * (n_int_y - i))),
+        window_.draw(create_text(std::to_string(int(max) - int((max / n_int_y) * (n_int_y - i))),
          sf::Vector2f(barra[0].position.x - (0.5)* barra[0].position.x, barra[0].position.y - (0.06)*barra[0].position.y)));
         
     }
 
     //Creo, richiamando l'opportuna funzione, e disegno le barre dell'asse x con i rispettivi valori
     for(int i = 1; i != (int)data_.get().size() + 1; ++i){
-        auto barra = crea_barra_asse_x(origine.x + i*delta_x);
+        auto barra = create_x_axis_bar(origin.x + i*delta_x);
         window_.draw(barra);
-        if(i % 5 == 0) window_.draw(crea_text(std::to_string(i), sf::Vector2f(barra[0].position.x - (0.01)*barra[0].position.x, barra[0].position.y + (0.02)*barra[0].position.y)));
+        if(i % 5 == 0) window_.draw(create_text(std::to_string(i), sf::Vector2f(barra[0].position.x - (0.01)*barra[0].position.x, barra[0].position.y + (0.02)*barra[0].position.y)));
     }
     std::cout<<'\n';
 }
@@ -100,7 +100,7 @@ void Finestra::draw(){
     window_.clear();
 
     //Disegno tutto quello che c'è da disegnare
-    window_.draw(label_origin); //L'origine degli assi (simbolo)
+    window_.draw(label_origin); //L'origin degli assi (simbolo)
     window_.draw(asse_x);
     window_.draw(asse_y);
     window_.draw(punta_x);
@@ -110,7 +110,7 @@ void Finestra::draw(){
     window_.draw(label_y);
     draw_barre();
 
-    window_.draw(crea_text((label_y_ + " " + std::to_string(int(data_.get().back()))), sf::Vector2f((0.80)*display_width_, (0.05)*display_height_)));
-    window_.draw(crea_text(("Giorno " + std::to_string(data_.get().size())), sf::Vector2f((0.80)*display_width_, (0.1)*display_height_)));
+    window_.draw(create_text((label_y_ + " " + std::to_string(int(data_.get().back()))), sf::Vector2f((0.80)*display_width_, (0.05)*display_height_)));
+    window_.draw(create_text(("Giorno " + std::to_string(data_.get().size())), sf::Vector2f((0.80)*display_width_, (0.1)*display_height_)));
     window_.display();
 }
