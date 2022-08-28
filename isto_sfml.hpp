@@ -3,41 +3,45 @@
 
 #include "isto.hpp"
 #include <SFML/Graphics.hpp>
-#include <iostream> //Solo per debugging
+
+/*
+This class has the purpose of represent data with an histogram in a graphic window. It can store data,
+in an object of the class "isto", and draw them on window. It use a graphic library called "SFML".
+*/
 
 class Finestra{
     private:
-        isto<double> data_{}; //O deve essere int?
-        std::string label_x_{};
+        isto<double> data_{};
+        std::string label_x_{}; 
         std::string label_y_{};
         sf::Font font;
-        int const n_int_y = 7; //Numero di tacche sull'asse y
+        int const n_int_y = 7; //Bar's number on y axis
 
         sf::RenderWindow window_;
         unsigned display_width_ = sf::VideoMode::getDesktopMode().width / 2;
         unsigned display_height_ = sf::VideoMode::getDesktopMode().height / 2;
-        sf::Vector2f const origin = {(float)(0.13)*display_width_, (float)(0.90)*display_height_};  //Posizione di punti particolari
+        sf::Vector2f const origin = {(float)(0.13)*display_width_, (float)(0.90)*display_height_};  //Position of particulars points
         sf::Vector2f const x_extreme = {(float)(0.90)*display_width_, (float)(0.90)*display_height_};
         sf::Vector2f const y_extreme = {(float)(0.13)*display_width_,(float)(0.13)*display_height_};
-        double const h = (1.15)*y_extreme.y;
-        double delta_x = 15.f; //Spessore di ogni rettangolo
+        double const h = (1.15)*y_extreme.y; //upper extreme of rectangles
+        double delta_x = 15.f; //thickness of every rectangle
 
-        //Definizione e dichiarazione degli assi, scritto qua perché sono const
-        sf::VertexArray const asse_x = [&]{
+        //Declarations and definitions of axis, they are private and costant
+        sf::VertexArray const x_axis = [&]{
             sf::VertexArray linea(sf::LineStrip, 2);
             linea[0].position = origin;
             linea[1].position = x_extreme;
             return linea;
         }();
 
-        sf::VertexArray const asse_y = [&]{
+        sf::VertexArray const y_axis = [&]{
             sf::VertexArray linea(sf::LineStrip, 2);
             linea[0].position = origin;
             linea[1].position = y_extreme;
             return linea;
         }();
 
-        sf::VertexArray const punta_x = [&]{
+        sf::VertexArray const tip_x = [&]{
             sf::VertexArray triangolo(sf::Triangles, 3);
             triangolo[0].position = x_extreme;
             triangolo[1].position = sf::Vector2f((float)(x_extreme.x - (0.01)*x_extreme.x), (float)(origin.y + (0.01) * origin.y));
@@ -45,19 +49,19 @@ class Finestra{
             return triangolo;
         }();
 
-        sf::VertexArray const punta_y = [&]{
+        sf::VertexArray const tip_y = [&]{
             sf::VertexArray triangolo(sf::Triangles, 3);
             triangolo[0].position = y_extreme;
             triangolo[1].position = sf::Vector2f((float)(origin.x + (0.06)*origin.x), (float)(y_extreme.y + (0.13)*y_extreme.y));
             triangolo[2].position = sf::Vector2f((float)(origin.x - (0.06)*origin.x), (float)(y_extreme.y + (0.13)*y_extreme.y));
             return triangolo;
         }();
-
-        sf::Text label_x = create_text(label_x_, sf::Vector2f(x_extreme.x + (0.02)*x_extreme.x, origin.y));
-        sf::Text label_y = create_text(label_y_, sf::Vector2f(origin.x, y_extreme.y - (0.2)*y_extreme.y));
-        sf::Text label_origin = create_text("o", sf::Vector2f(origin.x - (0.1)*origin.x, origin.y + (0.01)*origin.y));
+        
+        sf::Text text_x_ = create_text(label_x_, sf::Vector2f(x_extreme.x + (0.02)*x_extreme.x, origin.y));
+        sf::Text text_y_ = create_text(label_y_, sf::Vector2f(origin.x, y_extreme.y - (0.2)*y_extreme.y));
+        sf::Text label_origin_ = create_text("o", sf::Vector2f(origin.x - (0.1)*origin.x, origin.y + (0.01)*origin.y));
     public:
-        Finestra() {
+        Finestra() { 
             if(!font.loadFromFile("arial.ttf")){
                 throw std::runtime_error("Could not load font");
             }
@@ -72,30 +76,33 @@ class Finestra{
             window_.create(sf::VideoMode(display_width_, display_height_), "Epidemic");
         }
 
-        bool isOpen();  //Uguale a window.isOpen() per far andare il ciclo while
-        void close();
-
-        void add(double x); //aggiungo elementi al mio isto
-
+        bool isOpen();  //same as window.isOpen(), needed to keep while loop up
+        void close();   //close the window
+        
+        void add(double x); 
         void add(std::vector<double> vector);
+        auto get_data(){ return data_; }
 
-        sf::Text create_text(std::string string, sf::Vector2f position); //Crea un testo generico in una posizione generica
-                                                                       //Capire perché se la dimensione del carattere gliela passo come
-                                                                       //parametro fissato da problemi (int grandezza = 10)
+        //Create a generic test in a generic position
+        sf::Text create_text(std::string string, sf::Vector2f position, int grandezza = 10);
 
-        sf::VertexArray create_rettangolo(double val, int i); //Crea un rettangolo alla posizione di i, l'altezza è calcolata in base al suo valore
-                                                            //e al massimo dei dati
+        //Create a vertical rectangle, i-times distant from origin. The height is calculated based on his value and the data's maximum
+        sf::VertexArray create_rectangle(double val, int i);
 
-        void draw_rectangle(); //Ciclo for che disegna tutti i rettangoli a partire dai dati in data_, chiama crea_rettangolo
+        //Loop that draw on window all rectangle. Calls create_rectangle
+        void draw_rectangle();
 
-        sf::VertexArray create_y_axis_bar(double heigh); //Crea una barra orizzontale sull'asse y a partire dall'altezza
+        //Create an horizontal bar on y axis, from an heigh
+        sf::VertexArray create_y_axis_bar(double heigh);
 
-        sf::VertexArray create_x_axis_bar(double distance); //Crea una barra verticale sull'asse x a partire dalla distanza
+        //Create a vertical bar on x axis, from the distance
+        sf::VertexArray create_x_axis_bar(double distance);
 
-        void draw_barre(); //Disegna le barre chiamando le due funzioni sopra, l'altezza dipende dal numero di intervalli, la distanza
-                           //dipende da delta_x e i
+        //Draw all the bars, calls the two function above
+        void draw_bars();
 
-        void draw(); //Disegna tutto, chiama le funzioni per disegnare le barre e i rettangoli
+        //Draw all, including axis and label.
+        void draw();
 };
 
 #endif

@@ -1,9 +1,17 @@
-//Per compilare
+//To compile
 //g++ -Wall -Wextra -fsanitize=address -lsfml-system -lsfml-window -lsfml-graphics epidemia.cpp isto_sfml.cpp palline.cpp main.cpp
 #include "epidemic.hpp"
 #include "isto.hpp"
 #include "isto_sfml.hpp"
-#include "palline.hpp"
+#include "circles.hpp"
+
+/*
+The program is divided into two parts. The first is the SIR model. It simulates an epidemic, with a population and two parameters taken
+in input. The evolution of the epidemic can be visualized as numbers on terminal, or as an histogram on a graphic window. It uses epidemic
+and Finestra classes. The second one is cellular automata. Using the class Person, it creates moving circles on screen, some of team are
+infected (red), can sometimes infect other healthy circles (blue), and sometimes die (black) or heal (green). The healed circles can
+go back to be blue (susceptible). The user choose the number of circles and infected.
+*/
 
 int main(){
     char scelta_ = ' ';
@@ -12,7 +20,8 @@ int main(){
         scelta_ = ' ';
         std::cout<<"Scegli il programma che ti interessa vedere.\na)Modello SIR\nb)Automi cellulari\nx)Esci\n";
         std::cin>>scelta_;
-
+        std::cout<<'\n';
+        
         //////////////////////
         //PROGRAMMA EPIDEMIA//
         //////////////////////
@@ -39,6 +48,7 @@ int main(){
                     std::cout<<"\nDigita 'b' per la visualizzazione grafica della pandemia\nDigita 'c' per inserire altri valori\n";
                     std::cout<<"Digita 'x' per tornare al menù\n";
                     std::cin>>scelta;
+                    std::cout<<'\n';
                     if(scelta == 'a'){
                         int giorni;
                         std::cout<<"Quanti giorni di evoluzione vuoi visualizzare? (Inserisci qualsiasi numero non positivo per farla andare finché non finisce) ";
@@ -51,12 +61,6 @@ int main(){
                                 clone.evolve();
                                 clone.print_p();
                                 sf::sleep(sf::milliseconds(200));
-
-                                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) break; //Non funziona perché credo non ci sia nessuna finestra aperta
-                                                                                            //e sul terminale non ha effetto sfml
-                                //Aggiungere una cosa che permette di uscire dalla visualizzazione dei dati schiacciando esc
-                                //e fare in modo di uscire se l'epidemia finisce, probabilmente meglio mettere una funzione all'interno
-                                //della stessa classe epidemia (bool?)
                               }
                         }
                         else{
@@ -72,6 +76,7 @@ int main(){
                         char s{};
                         std::cout<<"Che grafico ti inseressa?\nDigita 'a' per i suscettibili\nDigita 'b' per gli infetti\nDigita 'c' per i rimossi\n";
                         std::cin>>s;
+                        std::cout<<'\n';
                         epidemic clone = virus;
                         std::string mod{};
                         if(s == 'a') mod = "Suscettibili";
@@ -85,7 +90,7 @@ int main(){
 
                         while(finestra.isOpen() && clone.IsOnGoing()){
 
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){ //Mette in pausa tutto, funziona in un modo un po' strano
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){ //Stop everything, to undone it press space again
                                 bool space = true;
                                 sf::sleep(sf::milliseconds(150));
                                 while(space){
@@ -98,7 +103,7 @@ int main(){
                             if(s == 'b') finestra.add(clone.approx().I);
                             if(s == 'c') finestra.add(clone.approx().R);
 
-                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape))
+                            if(sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)) //Close the window if esc has been pressed
                                 finestra.close();
                             if(sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)){
                                 clone.evolve();
@@ -214,7 +219,11 @@ int main(){
             if((*it).position().x > (display_width - 20) && (*it).velocity().x > 0)
             {(*it).velocity((*it).velocity().x * (-1), (*it).velocity().y);}   
             if((*it).position().y > (display_height - 70) && (*it).velocity().y > 0) 
-            {(*it).velocity((*it).velocity().x, (*it).velocity().y * (-1));}  
+            {(*it).velocity((*it).velocity().x, (*it).velocity().y * (-1));}
+
+            assert((*it).position().x>-25 && (*it).position().x < (display_width) + 5 
+            && (*it).position().y>-25 && (*it).position().y<display_height-45); //assert people are inside borders
+
             (*it).evolve_p();                    
             (*it).evolve_v();                    
             (*it).setPosition((*it).position().x, (*it).position().y);
@@ -274,7 +283,6 @@ int main(){
            p.setRadius(radius);
            ++n_infectable; 
            ++n_people_alive;
-           people.reserve(people.size()+2);  
            people.push_back(p);
         }
         if (sf::Mouse::isButtonPressed(sf::Mouse::Right)){  // with mouse right click infected people will spawn
@@ -286,22 +294,12 @@ int main(){
            p.infection(1);
            ++n_infected; 
            ++n_people_alive;
-           people.reserve(people.size()+2);
            people.push_back(p);
         } 
 
-        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)){
+        if (sf::Keyboard::isKeyPressed(sf::Keyboard::Escape)){ //Close the window if esc has been pressed
             window.close();
         }   
-
-        /*if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)){ Qua va male non so perché
-            bool space = true;
-            sf::sleep(sf::milliseconds(400));
-            while(space){
-                if(sf::Keyboard::isKeyPressed(sf::Keyboard::Space)) 
-                    space = false;
-            } 
-        }*/
 
         assert(n_infectable+n_infected+n_recovered == n_people_alive);
 

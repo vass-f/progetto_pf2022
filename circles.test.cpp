@@ -1,6 +1,8 @@
+//To compile
+//g++ -Wall -Wextra -fsanitize=address -lsfml-system -lsfml-window -lsfml-graphics circles.cpp circles.test.cpp
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "doctest.h"
-#include "palline.hpp"
+#include "circles.hpp"
 
 TEST_CASE("Testing circles"){ //
     Person a;

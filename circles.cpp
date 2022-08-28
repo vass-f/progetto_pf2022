@@ -1,4 +1,4 @@
-#include "palline.hpp"
+#include "circles.hpp"
 
 void Person::position(double a, double b){ 
     position_.x = a;

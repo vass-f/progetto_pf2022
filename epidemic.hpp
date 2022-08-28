@@ -6,6 +6,13 @@
 #include <cassert>
 #include <cmath>
 
+/*
+The following class implement a model that describe a epidemic's behavior.
+The model divide people between three state: Susceptible, Infected and Removed (dead or healed).
+Through 3 differential equation we can predict the behavior of the epidemic in a population, knowing the two parameters
+that characterize an epidemic
+*/
+
 struct population{
     double S{}, I{}, R{};
 };
@@ -16,17 +23,17 @@ inline bool operator==(population p1, population p2){
 
 class epidemic{
     private:
-        double beta_{};
-        double gamma_{};
+        double beta_{};     //Probability of being infected
+        double gamma_{};    //Probability to die or to heal
         population p_{};
-        int N_{};
+        int N_{};           //Number of people, which must be costant through time, even if we work with double
     public:
-        epidemic(double b, double g, population p): beta_{b}, gamma_{g}, p_{p}{     //Costruttore
-            if(beta_ >= 1 || beta_ <= 0 || gamma_ >= 1 || gamma_ <= 0){  //se beta e gamma non sono nell'intervallo stampa l'errore
+        epidemic(double b, double g, population p): beta_{b}, gamma_{g}, p_{p}{     //Constructor
+            if(beta_ >= 1 || beta_ <= 0 || gamma_ >= 1 || gamma_ <= 0){  //If beta and gamma are out of range throw an error
                 throw std::runtime_error{"non valid parameters"};
             }
-            p_.S = round(p_.S);
-            p_.I = round(p_.I);
+            p_.S = round(p_.S); //Rounded input population for a better control on N_
+            p_.I = round(p_.I); 
             p_.R = round(p_.R);
 
             N_ = p_.S + p_.I + p_.R;
@@ -40,17 +47,16 @@ class epidemic{
             }
         }
 
-        void evolve();         //covid.evolve();
-        void evolve_t(int t);  //chiama evolve t volte
-        void print_p();         //stampa la population
-        population state();        //ritorna la population (l'ho fatta visto che è privata, per ora serve solo per i test)
-        int N();                    //ritorna la population totale, che deve essere costante
-        population approx();  //approx la population a interi ma la salva in un'altra variabile di tipo population
-        double tot();                 //Ritorna la somma degli elementi della variabile population, creata per fare il check sulla
-                                      //conservazione di N
-        bool IsOnGoing();
+        void evolve();              //evolve population through 3 equation
+        void evolve_t(int t);       //call evolve t-time
+        void print_p();             //print rounded population
+        population state();         //return population (not rounded)
+        int N();                    //return N_
+        population approx();        //return population (rounded)
+        double tot();               //return the sum of population's elements, created for testing purpose on N conservation
+        
+        bool IsOnGoing();           //True if the epidemic is on going, false on the opposite case
+                                    //With it's on going we mean the infected aren't zero
 };
-
-void evolve(epidemic x);
 
 #endif 

@@ -1,3 +1,5 @@
+//To compile
+//g++ -Wall -Wextra -fsanitize=address epidemic.cpp
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "doctest.h"
@@ -10,7 +12,6 @@ TEST_CASE("Testing epidemic"){
     x.evolve();
     CHECK(x.N() == tot);
     CHECK(x.approx() == (population){83, 14, 3});
-    //x.print_p();
 
     SUBCASE("0 infect") {
         population p2{100, 0, 0};
@@ -23,9 +24,9 @@ TEST_CASE("Testing epidemic"){
 
     SUBCASE("beta on gamma less than 1"){
         epidemic x2{0.25, 0.75, p1};
-        evolve(x2);
-        CHECK(x2.N() == tot);
-        CHECK(x2.approx() == (population){90, 10, 0});
+        x2.evolve_t(3);
+        CHECK(x.N() == tot);
+        CHECK(x2.approx().I == 0);
     }
 
     SUBCASE("invalid beta and gamma"){
@@ -36,8 +37,6 @@ TEST_CASE("Testing epidemic"){
     }
 
     SUBCASE("test conservation of N"){
-        /*population p2{10000, 10, 0};
-        epidemic x3{0.6 , 0.3, p2};*/
         population p{90, 10, 0};
         epidemic x3{0.60, 0.40, p};    
         CHECK(x3.N() == 100);
@@ -75,11 +74,9 @@ TEST_CASE("Testing epidemic"){
         CHECK(x4.N() == x4.tot());
         x4.evolve_t(10000);
         CHECK(x4.N() == x4.tot()); 
-        x4.print_p();
         
         x4.evolve_t(10000);
-        CHECK(x4.N() == x4.tot());       
-        x4.print_p();
+        CHECK(x4.N() == x4.tot());
     }
 
     SUBCASE("test IsOnGoing"){
@@ -103,10 +100,10 @@ TEST_CASE("Testing epidemic"){
     }
 
     SUBCASE("wrong population"){
-        population p3{-1, -3, 1}; //Negative population
+        population p3{-1, -3, 1};
         CHECK_THROWS(epidemic{0.1,0.1,p3});
 
-        population p4{0.4, 0.3, 0.4};
+        population p4{0.4, 0.3, 0.4};           
         CHECK_THROWS(epidemic{0.1, 0.1, p4});
 
         population p5{0.6, 0.6, 0.3};
