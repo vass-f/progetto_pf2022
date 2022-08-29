@@ -20,11 +20,11 @@ infected.
 
 int main() {
   char scelta_ = ' ';
-  std::cout << "Benvenuto\n";
+  std::cout << "Welcome\n";
   while (scelta_ != 'x') {
     scelta_ = ' ';
-    std::cout << "Scegli il programma che ti interessa vedere.\na)Modello "
-                 "SIR\nb)Automi cellulari\nx)Esci\n";
+    std::cout << "Choose the program you're interested in.\na) SIR "
+                 "model\nb) Cellular automata\nx) Exit\n";
     std::cin >> scelta_;
     std::cout << '\n';
 
@@ -39,36 +39,30 @@ int main() {
       while (scelta != 'x' && (scelta == 'a' || scelta == 'b' ||
                                scelta == 'c' || scelta == ' ')) {
         scelta = ' ';
-        std::cout << "Inserisci il numero totale della popolazione: ";
+        std::cout << "Enter the number of people: ";
         std::cin >> p.S;
-        std::cout << "Inserisci il numero di infetti: ";
+        std::cout << "Enter the number of infected people: ";
         std::cin >> p.I;
         p.S -= p.I;
-        std::cout << "Inserisci un valore per beta e un valore per gamma\nBeta "
-                     "(probabilità di contagio): ";
+        std::cout << "Enter the values of Beta and Gamma\nBeta "
+                     "(Infection's probability): ";
         std::cin >> beta;
         std::cout
-            << "Gamma (probabilità di terminare la malattia): ";  // E'
-                                                                  // formalmente
-                                                                  // probabilità
-                                                                  // di guarire o
-                                                                  // morire
+            << "Gamma (Disease's end probability): ";  //formally it's the probability of recovering or dying
         std::cin >> gamma;
         epidemic virus(beta, gamma, p);
 
         while (scelta != 'x' && scelta != 'c') {
-          std::cout << "Cosa vuoi visualizzare?\nDigita 'a' per l'evoluzione "
-                       "numerica della pandemia";
-          std::cout << "\nDigita 'b' per la visualizzazione grafica della "
-                       "pandemia\nDigita 'c' per inserire altri valori\n";
-          std::cout << "Digita 'x' per tornare al menù\n";
+          std::cout << "what do you want to display?\nPress 'a' for the numerical evolution of the epidemic";
+          std::cout << "\nPress 'b' for the graphics evolution of the"
+                       "epidemic\nPress 'c' to enter another values\n";
+          std::cout << "Press 'x' to go back to the menù\n";
           std::cin >> scelta;
           std::cout << '\n';
           if (scelta == 'a') {
             int giorni;
-            std::cout << "Quanti giorni di evoluzione vuoi visualizzare? "
-                         "(Inserisci qualsiasi numero non positivo per farla "
-                         "andare finché non finisce) ";
+            std::cout << "How many days do you want to see? "
+                         "(Enter any non-positive number to watch until epidemic's end)";
             std::cin >> giorni;
             epidemic clone = virus;
             std::cout << "S I R\n";
@@ -77,64 +71,65 @@ int main() {
               while (clone.IsOnGoing()) {
                 clone.evolve();
                 clone.print_p();
-                sf::sleep(sf::milliseconds(200));
+                sf::sleep(sf::milliseconds(250));
               }
             } else {
               for (int i = 0; i != giorni; ++i) {
                 clone.evolve();
                 clone.print_p();
-                sf::sleep(sf::milliseconds(200));
+                sf::sleep(sf::milliseconds(250));
               }
             }
           }
 
           if (scelta == 'b') {
             char s{};
-            std::cout << "Che grafico ti inseressa?\nDigita 'a' per i "
-                         "suscettibili\nDigita 'b' per gli infetti\nDigita 'c' "
-                         "per i rimossi\n";
+            std::cout << "What graphic are you interested in?\nPress 'a' for "
+                         "susceptible\nPress 'b' for infected\nPress 'c' "
+                         "for removed\n";
             std::cin >> s;
             std::cout << '\n';
             epidemic clone = virus;
             std::string mod{};
-            if (s == 'a') mod = "Suscettibili";
-            if (s == 'b') mod = "Infetti";
-            if (s == 'c') mod = "Rimossi";
-            Finestra finestra("Giorni", mod);
-            // legend<double> ;
+            if (s == 'a') mod = "Susceptible";
+            if (s == 'b') mod = "Infected";
+            if (s == 'c') mod = "Removed";
+            Finestra finestra("Days", mod);
             if (s == 'a') finestra.add(clone.approx().S);
             if (s == 'b') finestra.add(clone.approx().I);
             if (s == 'c') finestra.add(clone.approx().R);
 
-            while (finestra.isOpen() && clone.IsOnGoing()) {
+            while (finestra.isOpen()) {
               if (sf::Keyboard::isKeyPressed(
-                      sf::Keyboard::Space)) {  // Stop everything, to undone it
-                                               // press space again
-                bool space = true;
-                sf::sleep(sf::milliseconds(150));
-                while (space) {
-                  if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-                    space = false;
-                }
-              }
-              clone.evolve();
-              if (s == 'a') finestra.add(clone.approx().S);
-              if (s == 'b') finestra.add(clone.approx().I);
-              if (s == 'c') finestra.add(clone.approx().R);
-
-              if (sf::Keyboard::isKeyPressed(
-                      sf::Keyboard::Escape))  // Close the window if esc has
+                      sf::Keyboard::Escape)){  // Close the window if esc has
                                               // been pressed
                 finestra.close();
-              if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+                }
+              if(clone.IsOnGoing()){        //With this condition the window can stay open even though the epidemic has ended
+                if (sf::Keyboard::isKeyPressed(
+                        sf::Keyboard::Space)) {  // Stop everything, to undone it
+                                                 // press space again
+                  bool space = true;
+                  sf::sleep(sf::milliseconds(150));
+                  while (space) {
+                    if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
+                      space = false;
+                  }
+                }
                 clone.evolve();
                 if (s == 'a') finestra.add(clone.approx().S);
                 if (s == 'b') finestra.add(clone.approx().I);
                 if (s == 'c') finestra.add(clone.approx().R);
-              }
 
+                if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+                  clone.evolve();
+                  if (s == 'a') finestra.add(clone.approx().S);
+                  if (s == 'b') finestra.add(clone.approx().I);
+                  if (s == 'c') finestra.add(clone.approx().R);
+                }
+                sf::sleep(sf::milliseconds(400));
+              }
               finestra.draw();
-              sf::sleep(sf::milliseconds(400));
             }
           }
         };
@@ -373,7 +368,7 @@ int main() {
           auto recovered = "Recovered:  " + std::to_string(n_recovered);
           auto dead = "Dead:  " + std::to_string(n_dead);
           auto info_1 = "More than fifty dead";
-          auto info_2 = "More than one hundred dead";
+          auto info_2 = "More than hundred dead";
           auto info_3 = "More than two hundred dead";
           auto info_4 = "More than five hundred dead";
           auto info_5 = "More than one thousand dead";
