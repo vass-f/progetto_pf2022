@@ -1,5 +1,5 @@
-// To compile
-// g++ -Wall -Wextra -fsanitize=address epidemic.cpp
+//To compile
+//g++ -Wall -Wextra -fsanitize=address epidemic.cpp epidemic.test.cpp
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 
 #include "doctest.h"
@@ -20,7 +20,14 @@ TEST_CASE("Testing epidemic") {
     x1.evolve();
     CHECK(x.N() == tot);
     CHECK(x1.approx() == (population){100, 0, 0});
-  }
+    }
+
+    SUBCASE("beta on gamma less than 1"){
+        epidemic x2{0.25, 0.75, p1};
+        x2.evolve_t(4);
+        CHECK(x.N() == tot);
+        CHECK(x2.approx().I == 0);
+    }
 
   SUBCASE("beta on gamma less than 1") {
     epidemic x2{0.25, 0.75, p1};
