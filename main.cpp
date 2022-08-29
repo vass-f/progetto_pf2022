@@ -48,13 +48,16 @@ int main() {
                      "(Infection's probability): ";
         std::cin >> beta;
         std::cout
-            << "Gamma (Disease's end probability): ";  //formally it's the probability of recovering or dying
+            << "Gamma (Disease's end probability): ";  // formally it's the
+                                                       // probability of
+                                                       // recovering or dying
         std::cin >> gamma;
         epidemic virus(beta, gamma, p);
 
         while (scelta != 'x' && scelta != 'c') {
-          std::cout << "what do you want to display?\nPress 'a' for the numerical evolution of the epidemic";
-          std::cout << "\nPress 'b' for the graphics evolution of the"
+          std::cout << "what do you want to display?\nPress 'a' for the "
+                       "numerical evolution of the epidemic";
+          std::cout << "\nPress 'b' for the graphics evolution of the "
                        "epidemic\nPress 'c' to enter another values\n";
           std::cout << "Press 'x' to go back to the menù\n";
           std::cin >> scelta;
@@ -62,7 +65,8 @@ int main() {
           if (scelta == 'a') {
             int giorni;
             std::cout << "How many days do you want to see? "
-                         "(Enter any non-positive number to watch until epidemic's end)";
+                         "(Enter any non-positive number to watch until "
+                         "epidemic's end)";
             std::cin >> giorni;
             epidemic clone = virus;
             std::cout << "S I R\n";
@@ -101,14 +105,16 @@ int main() {
 
             while (finestra.isOpen()) {
               if (sf::Keyboard::isKeyPressed(
-                      sf::Keyboard::Escape)){  // Close the window if esc has
-                                              // been pressed
+                      sf::Keyboard::Escape)) {  // Close the window if esc has
+                                                // been pressed
                 finestra.close();
-                }
-              if(clone.IsOnGoing()){        //With this condition the window can stay open even though the epidemic has ended
+              }
+              if (clone.IsOnGoing()) {  // With this condition the window can
+                                        // stay open even though the epidemic has
+                                        // ended
                 if (sf::Keyboard::isKeyPressed(
-                        sf::Keyboard::Space)) {  // Stop everything, to undone it
-                                                 // press space again
+                        sf::Keyboard::Space)) {  // Stop everything, to undone
+                                                 // it press space again
                   bool space = true;
                   sf::sleep(sf::milliseconds(150));
                   while (space) {
