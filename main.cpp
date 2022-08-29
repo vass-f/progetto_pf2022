@@ -1,6 +1,6 @@
 // To compile
 // g++ -Wall -Wextra -fsanitize=address -lsfml-system -lsfml-window
-// -lsfml-graphics epidemia.cpp isto_sfml.cpp palline.cpp main.cpp
+// -lsfml-graphics epidemic.cpp isto_sfml.cpp circles.cpp main.cpp
 #include "circles.hpp"
 #include "epidemic.hpp"
 #include "isto.hpp"
