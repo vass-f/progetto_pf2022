@@ -1,6 +1,5 @@
 // To compile
-// g++ -Wall -Wextra -fsanitize=address -lsfml-system -lsfml-window
-// -lsfml-graphics circles.cpp circles.test.cpp
+// g++ -Wall -Wextra -fsanitize=address -lsfml-system -lsfml-window -lsfml-graphics circles.cpp circles.test.cpp
 #define DOCTEST_CONFIG_IMPLEMENT_WITH_MAIN
 #include "circles.hpp"
 #include "doctest.h"

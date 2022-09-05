@@ -132,4 +132,3 @@ class Finestra {
 };
 
 #endif
-// Fare la finestra delle informazioni in alto a destra

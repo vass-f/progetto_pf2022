@@ -1,5 +1,3 @@
-#ifndef PALLINE_HPP
-#define PALLINE_HPP
 
 #include <SFML/Config.hpp>
 #include <SFML/Graphics.hpp>
@@ -54,5 +52,3 @@ class Person {
   double distance(
       Person& other_radius);  // calculates the distance between two people
 };
-
-#endif
